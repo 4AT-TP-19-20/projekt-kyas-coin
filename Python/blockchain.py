@@ -3,7 +3,7 @@ class Blockchain:
         self.chain = []
         self.aktuelle_transaktion = []
 
-        self.neuer_block(beweis=100, vorheriger_hash=)
+        self.neuer_block(beweis=100)
 
     def neuer_block(self, beweis, vorheriger_hash=None):
         pass
