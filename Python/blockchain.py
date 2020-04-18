@@ -2,6 +2,7 @@ from time import time
 import json
 import hashlib
 
+
 class Blockchain:
     def __init__(self):
         self.chain = []
@@ -14,7 +15,7 @@ class Blockchain:
             'index': len(self.chain) + 1,
             'zeit_erstellung': time(),
             'beweis': beweis,
-            'vorheriger_hash': self.block_hashen(self.chain[len(self.chain)-1])
+            'vorheriger_hash': self.block_hashen(self.chain[len(self.chain) - 1])
         }
         self.aktuelle_transaktion.clear()
         self.chain.append(struktur_block)
