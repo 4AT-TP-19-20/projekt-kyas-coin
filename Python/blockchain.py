@@ -8,14 +8,14 @@ class Blockchain:
         self.chain = []
         self.aktuelle_transaktionen = []
 
-        self.neuer_block(beweis=100)
+        self.neuer_block(beweis=100, vorheriger_hash='0')
 
-    def neuer_block(self, beweis):
+    def neuer_block(self, beweis, vorheriger_hash):
         struktur_block = {
             'index': len(self.chain) + 1,
             'zeit_erstellung': time(),
             'beweis': beweis,
-            'vorheriger_hash': self.block_hashen(self.chain[len(self.chain) - 1]),
+            'vorheriger_hash': vorheriger_hash,
             'transaktionen': self.aktuelle_transaktionen
         }
         self.aktuelle_transaktionen.clear()
@@ -39,12 +39,14 @@ class Blockchain:
 
     @property
     def letzter_block(self):
-        lenght = len(self.chain) - 1
-        return lenght
+        return self.chain[-1]
 
-    def pow(self, vorheriger_beweis):
-        aktueller_beweis = None
-        while self.beweise_validieren(vorheriger_beweis, aktueller_beweis) != True:
+    def pow(self, vorheriger_block):
+        vorheriger_beweis = vorheriger_block['beweis']
+        vorheriger_hash = self.block_hashen(vorheriger_block)
+
+        aktueller_beweis = 0
+        while self.beweise_validieren(vorheriger_beweis, aktueller_beweis) is False:
             aktueller_beweis = aktueller_beweis + 1
         return aktueller_beweis
 
