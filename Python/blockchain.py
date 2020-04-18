@@ -46,13 +46,13 @@ class Blockchain:
         vorheriger_hash = self.block_hashen(vorheriger_block)
 
         aktueller_beweis = 0
-        while self.beweise_validieren(vorheriger_beweis, aktueller_beweis) is False:
+        while self.beweise_validieren(vorheriger_beweis, aktueller_beweis, vorheriger_hash) is False:
             aktueller_beweis = aktueller_beweis + 1
         return aktueller_beweis
 
     @staticmethod
-    def beweise_validieren(vorheriger_beweis, aktueller_beweis):
-        x = f'{vorheriger_beweis}{aktueller_beweis}'.encode()
+    def beweise_validieren(vorheriger_beweis, aktueller_beweis, vorheriger_hash):
+        x = f'{vorheriger_beweis}{aktueller_beweis}{vorheriger_hash}'.encode()
         z = hashlib.sha256(x).hexdigest()
 
         # Durch das Hinzufügen von mehr 0en an diesem Punkt, kann man die Mining
