@@ -6,7 +6,7 @@ import hashlib
 class Blockchain:
     def __init__(self):
         self.chain = []
-        self.aktuelle_transaktion = []
+        self.aktuelle_transaktionen = []
 
         self.neuer_block(beweis=100)
 
@@ -15,14 +15,15 @@ class Blockchain:
             'index': len(self.chain) + 1,
             'zeit_erstellung': time(),
             'beweis': beweis,
-            'vorheriger_hash': self.block_hashen(self.chain[len(self.chain) - 1])
+            'vorheriger_hash': self.block_hashen(self.chain[len(self.chain) - 1]),
+            'transaktionen': self.aktuelle_transaktionen
         }
-        self.aktuelle_transaktion.clear()
+        self.aktuelle_transaktionen.clear()
         self.chain.append(struktur_block)
         return struktur_block
 
     def neue_transaktion(self, absender, empfänger, betrag):
-        self.aktuelle_transaktion.append({
+        self.aktuelle_transaktionen.append({
             'absender': absender,
             'empfänger': empfänger,
             'betrag': betrag,
@@ -36,6 +37,7 @@ class Blockchain:
         hash = hashlib.sha256(name_block).hexdigest()
         return hash
 
+    @property
     def letzter_block(self):
         lenght = len(self.chain) - 1
         return lenght
