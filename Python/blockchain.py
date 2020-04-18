@@ -58,5 +58,4 @@ class Blockchain:
         # Durch das Hinzufügen von mehr 0en an diesem Punkt, kann man die Mining
         # Schwierigkeit stark beeinflussen --> je mehr 0en, desto länger dauert
         # die Suche nach einer Lösung
-        y = z[:4] = "0000"
-        return y
+        return z[:4] == "0000"

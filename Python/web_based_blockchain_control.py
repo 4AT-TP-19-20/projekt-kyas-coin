@@ -4,13 +4,13 @@ from uuid import uuid4
 
 knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
-blockchain = bc.Blockchain
+blockchain = bc.Blockchain()
 
 
 @knotenpunkt.route('/mine')
 def minen():
     vorheriger_block = blockchain.letzter_block
-    beweis = blockchain.pow(vorheriger_block)
+    beweis = blockchain.pow(vorheriger_block=vorheriger_block)
 
     # Belohnung für Mining einbauen
 
