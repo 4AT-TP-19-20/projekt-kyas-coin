@@ -1,5 +1,6 @@
 from time import time
-
+import json
+import hashlib
 
 class Blockchain:
     def __init__(self):
@@ -28,8 +29,11 @@ class Blockchain:
         index = self.letzter_block['index']
         return index + 1
 
-    def block_hashen(self):
-        pass
+    @staticmethod
+    def block_hashen(hashblock):
+        name_block = json.dumps(hashblock, sort_keys=True).encode()
+        hash = hashlib.sha256(name_block).hexdigest()
+        return hash
 
     def letzter_block(self):
         lenght = len(self.chain) - 1
