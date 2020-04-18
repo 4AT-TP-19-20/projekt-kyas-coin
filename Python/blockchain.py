@@ -1,7 +1,7 @@
 from time import time
 import json
 import hashlib
-
+from Python import web_based_blockchain_control
 
 class Blockchain:
     def __init__(self):
@@ -48,6 +48,8 @@ class Blockchain:
         aktueller_beweis = 0
         while self.beweise_validieren(vorheriger_beweis, aktueller_beweis, vorheriger_hash) is False:
             aktueller_beweis = aktueller_beweis + 1
+            if web_based_blockchain_control.already_mined == False:
+                return True
         return aktueller_beweis
 
     @staticmethod

@@ -2,6 +2,8 @@ from Python import blockchain as bc
 from flask import Flask, jsonify, request
 from uuid import uuid4
 
+already_mined = False
+
 knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
@@ -9,13 +11,18 @@ blockchain = bc.Blockchain()
 
 @knotenpunkt.route('/mine')
 def minen():
+    # Berechnung des nächsten Beweises
     vorheriger_block = blockchain.letzter_block
-    beweis = blockchain.pow(vorheriger_block=vorheriger_block)
+    nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
+    if nächster_beweis == False:
+        global nächster_beweis
+        nächster_beweis = False
+        return
 
     # Belohnung für Mining einbauen
 
     vorheriger_hash = blockchain.block_hashen(vorheriger_block)
-    neuer_block = blockchain.neuer_block(beweis=beweis, vorheriger_hash=vorheriger_hash)
+    neuer_block = blockchain.neuer_block(beweis=nächster_beweis, vorheriger_hash=vorheriger_hash)
     antwort = {
         'nachricht': "Neuer Block wurde erstellt",
         'index': neuer_block['index'],
@@ -45,3 +52,9 @@ def neue_transaktion():
     antwort = {'nachricht': f'Transaktion wird zum Block hinzugefügt mit dem index {index_transaktion}'}
     return jsonify(antwort), 201
 
+
+@knotenpunkt.route('/mined/already')
+def mining_status_ändern():
+    global already_mined
+    already_mined = True
+    return jsonify(), 200
