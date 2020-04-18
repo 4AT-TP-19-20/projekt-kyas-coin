@@ -9,25 +9,22 @@ blockchain = bc.Blockchain
 
 @knotenpunkt.route('/mine')
 def minen():
-    letzter_block = blockchain.letzter_block
-    letzter_beweis = letzter_block['beweis']
-    aktueller_beweis = blockchain.pow(letzter_beweis)
+    vorheriger_block = blockchain.letzter_block
+    beweis = blockchain.pow(vorheriger_block)
 
-    # Belonung einbauen
+    # Belohnung für Mining einbauen
 
-    # Neuen Block erstellen und zur Chain hinzufügen
-    vorheriger_hash = blockchain.block_hashen(letzter_block)
-    neuer_block = blockchain.neuer_block(beweis=aktueller_beweis)
-
+    vorheriger_hash = blockchain.block_hashen(vorheriger_block)
+    neuer_block = blockchain.neuer_block(beweis, vorheriger_hash)
     antwort = {
-        'nachricht': "Neuer Block erstellt",
+        'nachricht': "Neuer Block wurde erstellt",
         'index': neuer_block['index'],
-        'transaktionen':
-    neuer_block['transaktionen'],
+        'transaktionen': neuer_block['transaktionen'],
         'beweis': neuer_block['beweis'],
         'vorheriger_hash': neuer_block['vorheriger_hash']
     }
     return jsonify(antwort), 200
+
 
 @knotenpunkt.route('/chain')
 def rückgabe_ganze_blockchain():
