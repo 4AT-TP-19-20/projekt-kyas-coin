@@ -39,3 +39,20 @@ class Blockchain:
     def letzter_block(self):
         lenght = len(self.chain) - 1
         return lenght
+
+    def pow(self, vorheriger_beweis):
+        aktueller_beweis = None
+        while self.beweise_validieren(vorheriger_beweis, aktueller_beweis) != True:
+            aktueller_beweis = aktueller_beweis + 1
+        return aktueller_beweis
+
+    @staticmethod
+    def beweise_validieren(vorheriger_beweis, aktueller_beweis):
+        x = f'{vorheriger_beweis}{aktueller_beweis}'.encode()
+        z = hashlib.sha256(x).hexdigest()
+
+        # Durch das Hinzufügen von mehr 0en an diesem Punkt, kann man die Mining
+        # Schwierigkeit stark beeinflussen --> je mehr 0en, desto länger dauert
+        # die Suche nach einer Lösung
+        y = z[:4] = "0000"
+        return y
