@@ -9,7 +9,7 @@ einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
 
 
-@knotenpunkt.route('/mine')
+@knotenpunkt.route('/mine', methods=['GET'])
 def minen():
     # Berechnung des nächsten Beweises
     vorheriger_block = blockchain.letzter_block
@@ -33,16 +33,16 @@ def minen():
     return jsonify(antwort), 200
 
 
-@knotenpunkt.route('/chain')
+@knotenpunkt.route('/chain', methods=['GET'])
 def rückgabe_ganze_blockchain():
     antwort = {
-        'chain': blockchain.chainer(),
+        'chain': blockchain.chain,
         'länge': len(blockchain.chain)
     }
     return jsonify(antwort), 200
 
 
-@knotenpunkt.route('/transaktionen/neu')
+@knotenpunkt.route('/transaktionen/neu', methods=['POST'])
 def neue_transaktion():
     transaktion_inputs = request.get_json(force=True)
 

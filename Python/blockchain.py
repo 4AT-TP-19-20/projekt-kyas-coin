@@ -3,15 +3,13 @@ import json
 import hashlib
 from Python import web_based_blockchain_control
 
+
 class Blockchain:
     def __init__(self):
-        self.chain = []
         self.aktuelle_transaktionen = []
+        self.chain = []
 
         self.neuer_block(beweis=100, vorheriger_hash='0')
-
-    def chainer(self):
-        return self.chain
 
     def neuer_block(self, beweis, vorheriger_hash):
         struktur_block = {
@@ -21,7 +19,7 @@ class Blockchain:
             'vorheriger_hash': vorheriger_hash,
             'transaktionen': self.aktuelle_transaktionen
         }
-        self.aktuelle_transaktionen.clear()
+        self.aktuelle_transaktionen = []
         self.chain.append(struktur_block)
         return struktur_block
 
