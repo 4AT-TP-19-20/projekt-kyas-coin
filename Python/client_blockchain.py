@@ -1,7 +1,7 @@
 from time import time
 import json
 import hashlib
-from Python import web_based_blockchain_control
+from Python import client_web_based_blockchain_control
 
 
 class Blockchain:

@@ -1,6 +1,7 @@
 from Python import client_blockchain as bc
 from flask import Flask, jsonify, request
 from uuid import uuid4
+import requests
 
 knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
