@@ -12,6 +12,8 @@ masternode = urlparse("http://173.212.211.222:2169").netloc
 
 @knotenpunkt.route('/mine', methods=['GET'])
 def minen():
+    # Bevor man mit dem Minen eines neuen Blocks anfängt wird die lokale Blockchain geupdated
+    sync_status = init_sync()
     # Berechnung des nächsten Beweises
     vorheriger_block = blockchain.letzter_block
     nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
@@ -42,6 +44,9 @@ def rückgabe_ganze_blockchain():
 
 @knotenpunkt.route('/transaktionen/neu', methods=['POST'])
 def neue_transaktion():
+    # Bevor eine neue Transaktion erstellt wird, muss die Transaktions Liste geupdated werden
+    update_status = init_sync(True)
+
     transaktion_inputs = request.get_json(force=True)
     masternode_transaktionen_antwort = requests.post(f'http://{masternode}/update/transaktionen',
                                                      json=transaktion_inputs)
@@ -55,21 +60,20 @@ def neue_transaktion():
         return jsonify("Transaktion konnte nicht ausgeführt werden"), 500
 
 
-@knotenpunkt.route('/get/chain', methods=['GET'])
-def init_sync():
-    resp = requests.get(f'http://{masternode}/full/chain')
-    if resp.status_code == 200:
-        neue_chain = resp.json()
-        if blockchain.neue_blockchain_validieren(neue_chain) is False:
-            return jsonify(), 500
-        else:
-            blockchain.chain = neue_chain
-            t = requests.get(f'http://{masternode}/aktuelle/transaktionen')
-            blockchain.aktuelle_transaktionen = t.json()
-    return jsonify("Chain replaced"), 200
+@knotenpunkt.route('/get/full/update', methods=['GET'])
+def init_sync(only_transactions=False):
+    if (only_transactions) is False:
+        resp = requests.get(f'http://{masternode}/full/chain')
+        if resp.status_code == 200:
+            neue_chain = resp.json()
+            if blockchain.neue_blockchain_validieren(neue_chain) is False:
+                return jsonify(), 500
+            else:
+                blockchain.chain = neue_chain
+                t = requests.get(f'http://{masternode}/aktuelle/transaktionen')
+                blockchain.aktuelle_transaktionen = t.json()
+        return jsonify("Chain replaced"), 200
+    else:
+        t = requests.get(f'http://{masternode}/aktuelle/transaktionen')
+        blockchain.aktuelle_transaktionen = t.json()
 
-
-@knotenpunkt.route('/registrieren', methods=['POST'])
-def reg():
-    # sich bei masternode registrieren
-    pass
