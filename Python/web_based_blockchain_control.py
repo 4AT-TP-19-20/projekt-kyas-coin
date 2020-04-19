@@ -15,8 +15,8 @@ def minen():
     vorheriger_block = blockchain.letzter_block
     nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
     if nächster_beweis == False:
-        global nächster_beweis
-        nächster_beweis = False
+        global already_mined
+        already_mined = False
         return
 
     # Belohnung für Mining einbauen
