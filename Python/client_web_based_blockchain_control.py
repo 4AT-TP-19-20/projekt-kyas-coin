@@ -1,11 +1,13 @@
 from Python import client_blockchain as bc
 from flask import Flask, jsonify, request
 from uuid import uuid4
+from urllib.parse import urlparse
 import requests
 
 knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
+masternode = urlparse("http://173.212.211.222:2169").netloc
 
 
 @knotenpunkt.route('/mine', methods=['GET'])
@@ -45,3 +47,11 @@ def neue_transaktion():
                                                     betrag=transaktion_inputs['betrag'])
     antwort = {'nachricht': f'Transaktion wird zum Block hinzugefügt mit dem index {index_transaktion}'}
     return jsonify(antwort), 201
+
+
+@knotenpunkt.route('/masternode', methods=['GET'])
+def masternode_kontaktieren():
+    resp = requests.get(f'http://{masternode}/url')
+    if resp.status_code == 200:
+        print(resp.json())
+    return jsonify(), 200
