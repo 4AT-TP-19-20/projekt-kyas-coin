@@ -15,18 +15,20 @@ def minen():
     # Berechnung des nächsten Beweises
     vorheriger_block = blockchain.letzter_block
     nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
-    # Belohnung für Mining einbauen
-
-    vorheriger_hash = blockchain.block_hashen(vorheriger_block)
-    neuer_block = blockchain.neuer_block(beweis=nächster_beweis, vorheriger_hash=vorheriger_hash)
-    antwort = {
-        'nachricht': "Neuer Block wurde erstellt",
-        'index': neuer_block['index'],
-        'transaktionen': neuer_block['transaktionen'],
-        'beweis': neuer_block['beweis'],
-        'vorheriger_hash': neuer_block['vorheriger_hash']
-    }
-    return jsonify(antwort), 200
+    masternode_antwort = requests.post(f'http://{masternode}/update/chain', json={"beweis": nächster_beweis})
+    if masternode_antwort.status_code == 200:
+        vorheriger_hash = blockchain.block_hashen(vorheriger_block)
+        neuer_block = blockchain.neuer_block(beweis=nächster_beweis, vorheriger_hash=vorheriger_hash)
+        antwort = {
+            'nachricht': "Neuer Block wurde erstellt",
+            'index': neuer_block['index'],
+            'transaktionen': neuer_block['transaktionen'],
+            'beweis': neuer_block['beweis'],
+            'vorheriger_hash': neuer_block['vorheriger_hash']
+        }
+        return jsonify(antwort), 200
+    else:
+        return jsonify(), 500
 
 
 @knotenpunkt.route('/chain', methods=['GET'])
@@ -41,12 +43,16 @@ def rückgabe_ganze_blockchain():
 @knotenpunkt.route('/transaktionen/neu', methods=['POST'])
 def neue_transaktion():
     transaktion_inputs = request.get_json(force=True)
-
-    index_transaktion = blockchain.neue_transaktion(absender=transaktion_inputs['absender'],
-                                                    empfänger=transaktion_inputs['empfänger'],
-                                                    betrag=transaktion_inputs['betrag'])
-    antwort = {'nachricht': f'Transaktion wird zum Block hinzugefügt mit dem index {index_transaktion}'}
-    return jsonify(antwort), 201
+    masternode_transaktionen_antwort = requests.post(f'http://{masternode}/update/transaktionen',
+                                                     json=transaktion_inputs)
+    if (masternode_transaktionen_antwort.status_code) == 200:
+        index_transaktion = blockchain.neue_transaktion(absender=transaktion_inputs['absender'],
+                                                        empfänger=transaktion_inputs['empfänger'],
+                                                        betrag=transaktion_inputs['betrag'])
+        antwort = {'nachricht': f'Transaktion wird zum Block hinzugefügt mit dem index {index_transaktion}'}
+        return jsonify(antwort), 201
+    else:
+        return jsonify("Transaktion konnte nicht ausgeführt werden"), 500
 
 
 @knotenpunkt.route('/get/chain', methods=['GET'])
@@ -60,4 +66,10 @@ def init_sync():
             blockchain.chain = neue_chain
             t = requests.get(f'http://{masternode}/aktuelle/transaktionen')
             blockchain.aktuelle_transaktionen = t.json()
-    return jsonify(), 200
+    return jsonify("Chain replaced"), 200
+
+
+@knotenpunkt.route('/registrieren', methods=['POST'])
+def reg():
+    # sich bei masternode registrieren
+    pass
