@@ -49,8 +49,6 @@ class Blockchain:
         aktueller_beweis = 0
         while self.beweise_validieren(vorheriger_beweis, aktueller_beweis, vorheriger_hash) is False:
             aktueller_beweis = aktueller_beweis + 1
-            if web_based_blockchain_control.already_mined == True:
-                return False
         return aktueller_beweis
 
     @staticmethod
