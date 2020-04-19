@@ -17,7 +17,7 @@ def minen():
     if nächster_beweis == False:
         global already_mined
         already_mined = False
-        return
+        return jsonify(), 200
 
     # Belohnung für Mining einbauen
 
