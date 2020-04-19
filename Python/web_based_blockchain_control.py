@@ -36,7 +36,7 @@ def minen():
 @knotenpunkt.route('/chain')
 def rückgabe_ganze_blockchain():
     antwort = {
-        'chain': blockchain.chain,
+        'chain': blockchain.chainer(),
         'länge': len(blockchain.chain)
     }
     return jsonify(antwort), 200

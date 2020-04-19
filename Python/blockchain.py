@@ -10,6 +10,9 @@ class Blockchain:
 
         self.neuer_block(beweis=100, vorheriger_hash='0')
 
+    def chainer(self):
+        return self.chain
+
     def neuer_block(self, beweis, vorheriger_hash):
         struktur_block = {
             'index': len(self.chain) + 1,
@@ -48,8 +51,8 @@ class Blockchain:
         aktueller_beweis = 0
         while self.beweise_validieren(vorheriger_beweis, aktueller_beweis, vorheriger_hash) is False:
             aktueller_beweis = aktueller_beweis + 1
-            if web_based_blockchain_control.already_mined == False:
-                return True
+            if web_based_blockchain_control.already_mined == True:
+                return False
         return aktueller_beweis
 
     @staticmethod
