@@ -44,7 +44,7 @@ def rückgabe_ganze_blockchain():
 
 @knotenpunkt.route('/transaktionen/neu')
 def neue_transaktion():
-    transaktion_inputs = request.get_json()
+    transaktion_inputs = request.get_json(force=True)
 
     index_transaktion = blockchain.neue_transaktion(absender=transaktion_inputs['absender'],
                                                     empfänger=transaktion_inputs['empfänger'],
