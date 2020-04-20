@@ -128,7 +128,10 @@ def client_transactions():
     for m in blockchain.aktuelle_transaktionen:
         if m['absender'] == client_name:
             rückgabe_transaktionen.append(m)
-    return jsonify(rückgabe_transaktionen), 200
+    finale_antwort = {
+        "transactions": rückgabe_transaktionen
+    }
+    return jsonify(finale_antwort), 200
 
 
 # TODO: Fix when no genesis block error

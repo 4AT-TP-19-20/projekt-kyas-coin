@@ -82,6 +82,21 @@ def init_sync(only_transactions=False):
         blockchain.aktuelle_transaktionen = t.json()
 
 
+@knotenpunkt.route('/spezifische/transaktionen', methods=['POST'])
+def spezifische_transaktionen():
+    nachricht = request.get_json(force=True)
+    antwort = requests.post(f'http://{masternode}/client/transactions', json=nachricht)
+    if antwort.status_code == 200:
+        return jsonify(antwort.json()), 200
+    else:
+        return jsonify(), 500
+
+
+@knotenpunkt.route('/spezifische/balance', methods=['POST'])
+def spezifische_balance():
+    pass
+
+
 def periodic_update():
     # TODO: Add periodic (Blocktime) updates using threads
     pass
