@@ -41,17 +41,6 @@ def blocktime():
             nächster_beweis = 0
             time.sleep(10)
 
-
-# Only for testing purposes
-@node.route('/mine', methods=['GET'])
-def minen():
-    # Berechnung des nächsten Beweises
-    vorheriger_block = blockchain.letzter_block
-    global nächster_beweis
-    nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
-    return jsonify("Okay"), 200
-
-
 @node.route('/update/chain', methods=['POST'])
 def update_chain():
     neuer_beweis_json = request.get_json(force=True)
@@ -113,3 +102,5 @@ def update_transactions():
                                 empfänger=neue_transaktionen['empfänger'],
                                 betrag=neue_transaktionen['betrag'])
     return jsonify(), 200
+
+#TODO: when already mined do not mine

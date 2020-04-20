@@ -5,6 +5,7 @@ import hashlib
 
 class Blockchain:
     def __init__(self):
+        #mempool
         self.aktuelle_transaktionen = []
         self.chain = []
 
