@@ -49,7 +49,7 @@ def rückgabe_ganze_blockchain():
 @knotenpunkt.route('/transaktionen/neu', methods=['POST'])
 def neue_transaktion():
     # Bevor eine neue Transaktion erstellt wird, muss die Transaktions Liste geupdated werden
-    update_status = init_sync(True)
+    update_status = init_sync()
 
     transaktion_inputs = request.get_json(force=True)
     masternode_transaktionen_antwort = requests.post(f'http://{masternode}/update/transaktionen',
