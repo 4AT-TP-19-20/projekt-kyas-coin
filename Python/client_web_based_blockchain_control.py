@@ -3,6 +3,7 @@ from flask import Flask, jsonify, request
 from uuid import uuid4
 from urllib.parse import urlparse
 import requests
+import threading
 
 knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
@@ -19,18 +20,12 @@ def minen():
     nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
     masternode_antwort = requests.post(f'http://{masternode}/update/chain', json={"beweis": nächster_beweis})
     if masternode_antwort.status_code == 200:
-        vorheriger_hash = blockchain.block_hashen(vorheriger_block)
-        neuer_block = blockchain.neuer_block(beweis=nächster_beweis, vorheriger_hash=vorheriger_hash)
         antwort = {
-            'nachricht': "Neuer Block wurde erstellt",
-            'index': neuer_block['index'],
-            'transaktionen': neuer_block['transaktionen'],
-            'beweis': neuer_block['beweis'],
-            'vorheriger_hash': neuer_block['vorheriger_hash']
+            'nachricht': "Neuer Block wird zu Blocktime erstellt",
         }
         return jsonify(antwort), 200
     else:
-        return jsonify(), 500
+        return jsonify("Fehler"), 500
 
 
 @knotenpunkt.route('/chain', methods=['GET'])
@@ -77,3 +72,7 @@ def init_sync(only_transactions=False):
         t = requests.get(f'http://{masternode}/aktuelle/transaktionen')
         blockchain.aktuelle_transaktionen = t.json()
 
+
+def periodic_update():
+    # TODO: Add periodic (Blocktime) updates using threads
+    pass
