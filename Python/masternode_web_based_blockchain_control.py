@@ -8,6 +8,8 @@ from Python import masternode_blockchain as bc
 first_time = True
 node = Flask("__name__")
 nächster_beweis = 0
+last_miner = ""
+block_reward = 500
 
 
 def blocktime():
@@ -30,7 +32,9 @@ def blocktime():
                 nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
                 # Keine Belohnung
             else:
-                # Belohnung für Miner
+                global last_miner
+                global block_reward
+                blockchain.neue_transaktion(absender="masternode", empfänger=last_miner, betrag=block_reward)
                 pass
             aktuell_letzter_block = blockchain.chain[-1]
             blockchain.neuer_block(nächster_beweis, blockchain.block_hashen(aktuell_letzter_block))
@@ -59,6 +63,8 @@ def update_chain():
         print("bad value")
         return jsonify("Block nicht valide."), 400
     else:
+        global last_miner
+        last_miner = neuer_beweis_json['miner']
         return jsonify(
             "Block valide. Block wird zur Blockchain hinzugefügt. Belohnung wird im nächsten Block ausgezahlt"), 200
         # Transaktion mit Belohnung für Miner einbauen
@@ -106,5 +112,4 @@ def update_transactions():
     blockchain.neue_transaktion(absender=neue_transaktionen['absender'],
                                 empfänger=neue_transaktionen['empfänger'],
                                 betrag=neue_transaktionen['betrag'])
-    # Update an andere Nodes schicken
     return jsonify(), 200

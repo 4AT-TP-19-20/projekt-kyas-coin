@@ -9,6 +9,7 @@ knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
 masternode = urlparse("http://173.212.211.222:2169").netloc
+name = "alexander"
 
 
 @knotenpunkt.route('/mine', methods=['GET'])
@@ -18,7 +19,9 @@ def minen():
     # Berechnung des nächsten Beweises
     vorheriger_block = blockchain.letzter_block
     nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
-    masternode_antwort = requests.post(f'http://{masternode}/update/chain', json={"beweis": nächster_beweis})
+    global name
+    masternode_antwort = requests.post(f'http://{masternode}/update/chain',
+                                       json={"beweis": nächster_beweis, "miner": name})
     if masternode_antwort.status_code == 200:
         antwort = {
             'nachricht': "Neuer Block wird zu Blocktime erstellt",
