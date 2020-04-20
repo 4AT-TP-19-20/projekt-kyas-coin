@@ -32,7 +32,6 @@ def blocktime():
             if nächster_beweis == 0:
                 vorheriger_block = blockchain.letzter_block
                 nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
-                # Keine Belohnung
             else:
                 global last_miner
                 global block_reward
@@ -62,8 +61,6 @@ def update_chain():
         already_mined = True
         return jsonify(
             "Block valide. Block wird zur Blockchain hinzugefügt. Belohnung wird im nächsten Block ausgezahlt"), 200
-        # Transaktion mit Belohnung für Miner einbauen
-        # Update an andere Nodes schicken
 
 
 threading.Thread(target=blocktime).start()
@@ -114,3 +111,25 @@ def update_transactions():
 def mining_status():
     global already_mined
     return jsonify(already_mined), 200
+
+
+@node.route('/client/transactions', methods=['POST'])
+def client_transactions():
+    nachricht = request.get_json(force=True)
+    client_name = nachricht['name']
+    rückgabe_transaktionen = []
+    for block in blockchain.chain:
+        block_transaktionen = block['transaktionen']
+        for t in block_transaktionen:
+            if t['absender'] == client_name:
+                rückgabe_transaktionen.append(t)
+            elif t['empfänger'] == client_name:
+                rückgabe_transaktionen.append(t)
+    for m in blockchain.aktuelle_transaktionen:
+        if m['absender'] == client_name:
+            rückgabe_transaktionen.append(m)
+    return jsonify(rückgabe_transaktionen), 200
+
+
+# TODO: Fix when no genesis block error
+# TODO: new transaction sync also chain
