@@ -10,12 +10,14 @@ node = Flask("__name__")
 nächster_beweis = 0
 last_miner = ""
 block_reward = 500
+already_mined = False
 
 
 def blocktime():
     while True:
         global first_time
         global nächster_beweis
+        global already_mined
         if first_time:
             if (int(time.time()) % 120) <= 5:
                 print((int(time.time()) % 120))
@@ -38,8 +40,10 @@ def blocktime():
                 pass
             aktuell_letzter_block = blockchain.chain[-1]
             blockchain.neuer_block(nächster_beweis, blockchain.block_hashen(aktuell_letzter_block))
+            already_mined = False
             nächster_beweis = 0
             time.sleep(10)
+
 
 @node.route('/update/chain', methods=['POST'])
 def update_chain():
@@ -53,7 +57,9 @@ def update_chain():
         return jsonify("Block nicht valide."), 400
     else:
         global last_miner
+        global already_mined
         last_miner = neuer_beweis_json['miner']
+        already_mined = True
         return jsonify(
             "Block valide. Block wird zur Blockchain hinzugefügt. Belohnung wird im nächsten Block ausgezahlt"), 200
         # Transaktion mit Belohnung für Miner einbauen
@@ -103,4 +109,8 @@ def update_transactions():
                                 betrag=neue_transaktionen['betrag'])
     return jsonify(), 200
 
-#TODO: when already mined do not mine
+
+@node.route('/mining/status', methods=['GET'])
+def mining_status():
+    global already_mined
+    return jsonify(already_mined), 200

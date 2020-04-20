@@ -9,26 +9,32 @@ knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
 masternode = urlparse("http://173.212.211.222:2169").netloc
-name = "alexander"
+name = "matteo"
 
 
 @knotenpunkt.route('/mine', methods=['GET'])
 def minen():
     # Bevor man mit dem Minen eines neuen Blocks anfängt wird die lokale Blockchain geupdated
     sync_status = init_sync()
-    # Berechnung des nächsten Beweises
-    vorheriger_block = blockchain.letzter_block
-    nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
-    global name
-    masternode_antwort = requests.post(f'http://{masternode}/update/chain',
-                                       json={"beweis": nächster_beweis, "miner": name})
-    if masternode_antwort.status_code == 200:
-        antwort = {
-            'nachricht': "Neuer Block wird zu Blocktime erstellt",
-        }
-        return jsonify(antwort), 200
-    else:
-        return jsonify("Fehler"), 500
+    status = requests.get(f'http://{masternode}/mining/status')
+    if status.status_code == 200:
+        mining_status = status.json()
+        if not mining_status:
+            # Berechnung des nächsten Beweises
+            vorheriger_block = blockchain.letzter_block
+            nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
+            global name
+            masternode_antwort = requests.post(f'http://{masternode}/update/chain',
+                                               json={"beweis": nächster_beweis, "miner": name})
+            if masternode_antwort.status_code == 200:
+                antwort = {
+                    'nachricht': "Neuer Block wird zu Blocktime erstellt",
+                }
+                return jsonify(antwort), 200
+            else:
+                return jsonify("Fehler"), 500
+        else:
+            return jsonify("POW wurde schon errechnet"), 500
 
 
 @knotenpunkt.route('/chain', methods=['GET'])
