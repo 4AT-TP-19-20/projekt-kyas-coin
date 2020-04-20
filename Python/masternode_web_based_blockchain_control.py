@@ -134,5 +134,24 @@ def client_transactions():
     return jsonify(finale_antwort), 200
 
 
+@node.route('/client/balance', methods=['POST'])
+def client_balance():
+    nachricht = request.get_json(force=True)
+    client_name = nachricht['name']
+    balance = 0
+    for block in blockchain.chain:
+        block_transaktionen = block['transaktionen']
+        for t in block_transaktionen:
+            if t['absender'] == client_name:
+                balance = balance - t['betrag']
+            elif t['empfänger'] == client_name:
+                balance = balance + t['betrag']
+    for m in blockchain.aktuelle_transaktionen:
+        if m['absender'] == client_name:
+            balance = balance - m['betrag']
+    new_balance = {
+        "balance": balance
+    }
+    return jsonify(new_balance), 200
+
 # TODO: Fix when no genesis block error
-# TODO: new transaction sync also chain

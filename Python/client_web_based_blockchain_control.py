@@ -9,7 +9,7 @@ knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
 masternode = urlparse("http://173.212.211.222:2169").netloc
-name = "matteo"
+name = "alexander"
 
 
 @knotenpunkt.route('/mine', methods=['GET'])
@@ -94,7 +94,12 @@ def spezifische_transaktionen():
 
 @knotenpunkt.route('/spezifische/balance', methods=['POST'])
 def spezifische_balance():
-    pass
+    nachricht = request.get_json(force=True)
+    antwort = requests.post(f'http://{masternode}/client/balance', json=nachricht)
+    if antwort.status_code == 200:
+        return jsonify(antwort.json()), 200
+    else:
+        return jsonify(), 500
 
 
 def periodic_update():
