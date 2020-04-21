@@ -13,6 +13,8 @@ block_reward = 500
 already_mined = False
 block_count = 0
 next_halving = 7200
+total_supply = 1000000000
+registered_users = []
 
 
 def blocktime():
@@ -49,6 +51,9 @@ def blocktime():
             block_count = block_count + 1
             already_mined = False
             nächster_beweis = 0
+
+            # Burn
+
             time.sleep(10)
 
 
@@ -164,3 +169,21 @@ def client_balance():
         "balance": balance
     }
     return jsonify(new_balance), 200
+
+
+@node.route('/register', methods=['POST'])
+def register():
+    nachricht = request.get_json(force=True)
+    global registered_users
+    for user in registered_users:
+        if user == nachricht['name']:
+            return jsonify("User schon registriert"), 200
+    registered_users.append(nachricht['name'])
+    print(registered_users)
+    return jsonify("User registriert"), 200
+
+
+@node.route('/register/print', methods=['GET'])
+def r():
+    global registered_users
+    return jsonify(registered_users), 200

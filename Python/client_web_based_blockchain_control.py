@@ -131,6 +131,10 @@ def set_name():
     nachricht = request.get_json(force=True)
     global name
     name = nachricht['name']
+    senden = {
+        "name": name
+    }
+    register = requests.post(f'http://{masternode}/register', json=senden)
     return jsonify("Name wurde auf " + name + " gesetzt"), 200
 
 
