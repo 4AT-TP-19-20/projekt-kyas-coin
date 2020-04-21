@@ -4,6 +4,8 @@ from flask import Flask, jsonify, request
 import threading
 import time
 from Python import masternode_blockchain as bc
+import math
+import random
 
 first_time = True
 node = Flask("__name__")
@@ -24,6 +26,7 @@ def blocktime():
         global block_reward
         global already_mined
         global block_count
+        global total_supply
         global next_halving
         if block_count == next_halving:
             block_reward = block_reward / 2
@@ -45,6 +48,7 @@ def blocktime():
             else:
                 global last_miner
                 blockchain.neue_transaktion(absender="masternode", empfänger=last_miner, betrag=block_reward)
+                total_supply = total_supply - block_reward
                 pass
             aktuell_letzter_block = blockchain.chain[-1]
             blockchain.neuer_block(nächster_beweis, blockchain.block_hashen(aktuell_letzter_block))
