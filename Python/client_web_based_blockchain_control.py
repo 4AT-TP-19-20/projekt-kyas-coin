@@ -50,10 +50,21 @@ def rückgabe_ganze_blockchain():
 def neue_transaktion():
     # Bevor eine neue Transaktion erstellt wird, muss die Transaktions Liste geupdated werden
     update_status = init_sync()
-
+    balance = 0
+    global name
+    nachricht = {
+        "name": name
+    }
     transaktion_inputs = request.get_json(force=True)
     empfänger = transaktion_inputs['empfänger']
     betrag = transaktion_inputs['betrag']
+
+    antwort = requests.post(f'http://{masternode}/client/balance', json=nachricht)
+    if antwort.status_code == 200:
+        antwort_payload = antwort.json()
+        balance = antwort_payload['balance']
+        if balance < betrag:
+            return jsonify("Balance nicht ausreichend"), 500
     t = {
         'absender': name,
         'empfänger': empfänger,

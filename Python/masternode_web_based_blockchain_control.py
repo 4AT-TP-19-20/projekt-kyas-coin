@@ -11,21 +11,29 @@ nächster_beweis = 0
 last_miner = ""
 block_reward = 500
 already_mined = False
+block_count = 0
+next_halving = 7200
 
 
 def blocktime():
     while True:
         global first_time
         global nächster_beweis
+        global block_reward
         global already_mined
+        global block_count
+        global next_halving
+        if block_count == next_halving:
+            block_reward = block_reward / 2
+            next_halving = next_halving * 2
         if first_time:
             if (int(time.time()) % 120) <= 5:
-                print((int(time.time()) % 120))
                 global blockchain
                 blockchain = bc.Blockchain()
                 first_time = False
                 nächster_beweis = 0
                 print("genesis")
+                block_count = block_count + 1
                 time.sleep(10)
         elif (int(time.time()) % 120) <= 5:
             print("new block")
@@ -34,11 +42,11 @@ def blocktime():
                 nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
             else:
                 global last_miner
-                global block_reward
                 blockchain.neue_transaktion(absender="masternode", empfänger=last_miner, betrag=block_reward)
                 pass
             aktuell_letzter_block = blockchain.chain[-1]
             blockchain.neuer_block(nächster_beweis, blockchain.block_hashen(aktuell_letzter_block))
+            block_count = block_count + 1
             already_mined = False
             nächster_beweis = 0
             time.sleep(10)
@@ -156,4 +164,3 @@ def client_balance():
         "balance": balance
     }
     return jsonify(new_balance), 200
-
