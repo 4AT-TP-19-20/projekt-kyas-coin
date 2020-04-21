@@ -79,11 +79,14 @@ def transaktionen():
 # Only for testing purposes
 @node.route('/chain', methods=['GET'])
 def rückgabe_ganze_blockchain():
-    antwort = {
-        'chain': blockchain.chain,
-        'länge': len(blockchain.chain)
-    }
-    return jsonify(antwort), 200
+    try:
+        antwort = {
+            'chain': blockchain.chain,
+            'länge': len(blockchain.chain)
+        }
+        return jsonify(antwort), 200
+    except:
+        return jsonify("No genesis block created"), 500
 
 
 # Only for testing purposes
@@ -154,4 +157,3 @@ def client_balance():
     }
     return jsonify(new_balance), 200
 
-# TODO: Fix when no genesis block error
