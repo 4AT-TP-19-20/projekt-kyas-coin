@@ -9,7 +9,7 @@ knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
 masternode = urlparse("http://173.212.211.222:2169").netloc
-name = "alexander"
+name = ""
 
 
 @knotenpunkt.route('/mine', methods=['GET'])
@@ -52,10 +52,17 @@ def neue_transaktion():
     update_status = init_sync()
 
     transaktion_inputs = request.get_json(force=True)
+    empfänger = transaktion_inputs['empfänger']
+    betrag = transaktion_inputs['betrag']
+    t = {
+        'absender': name,
+        'empfänger': empfänger,
+        'betrag': betrag
+    }
     masternode_transaktionen_antwort = requests.post(f'http://{masternode}/update/transaktionen',
-                                                     json=transaktion_inputs)
+                                                     json=t)
     if (masternode_transaktionen_antwort.status_code) == 200:
-        index_transaktion = blockchain.neue_transaktion(absender=transaktion_inputs['absender'],
+        index_transaktion = blockchain.neue_transaktion(absender=name,
                                                         empfänger=transaktion_inputs['empfänger'],
                                                         betrag=transaktion_inputs['betrag'])
         antwort = {'nachricht': f'Transaktion wird zum Block hinzugefügt mit dem index {index_transaktion}'}
@@ -82,9 +89,12 @@ def init_sync(only_transactions=False):
         blockchain.aktuelle_transaktionen = t.json()
 
 
-@knotenpunkt.route('/spezifische/transaktionen', methods=['POST'])
+@knotenpunkt.route('/spezifische/transaktionen', methods=['GET'])
 def spezifische_transaktionen():
-    nachricht = request.get_json(force=True)
+    global name
+    nachricht = {
+        "name": name
+    }
     antwort = requests.post(f'http://{masternode}/client/transactions', json=nachricht)
     if antwort.status_code == 200:
         return jsonify(antwort.json()), 200
@@ -92,14 +102,25 @@ def spezifische_transaktionen():
         return jsonify(), 500
 
 
-@knotenpunkt.route('/spezifische/balance', methods=['POST'])
+@knotenpunkt.route('/spezifische/balance', methods=['GET'])
 def spezifische_balance():
-    nachricht = request.get_json(force=True)
+    global name
+    nachricht = {
+        "name": name
+    }
     antwort = requests.post(f'http://{masternode}/client/balance', json=nachricht)
     if antwort.status_code == 200:
         return jsonify(antwort.json()), 200
     else:
         return jsonify(), 500
+
+
+@knotenpunkt.route('/set/name', methods=['POST'])
+def set_name():
+    nachricht = request.get_json(force=True)
+    global name
+    name = nachricht['name']
+    return jsonify("Name wurde auf " + name + " gesetzt"), 200
 
 
 def periodic_update():
