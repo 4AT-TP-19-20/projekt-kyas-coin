@@ -37,7 +37,6 @@ def blocktime():
         if first_time:
             if (int(time.time()) % 120) <= 5:
                 global blockchain
-                print(time.time() % 120)
                 blockchain = bc.Blockchain()
                 total_supply = total_supply - blockchain.genesis_distributed_money
                 for user in blockchain.genesis_initial_users:
@@ -45,12 +44,9 @@ def blocktime():
 
                 first_time = False
                 nächster_beweis = 0
-                print("genesis")
                 block_count = block_count + 1
                 time.sleep(10)
         elif (int(time.time()) % 120) <= 5:
-            print(time.time() % 120)
-            print("new block")
             if nächster_beweis == 0:
                 vorheriger_block = blockchain.letzter_block
                 nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
@@ -141,7 +137,6 @@ def update_chain():
     aktuell_letzter_block = blockchain.chain[-1]
     if blockchain.beweise_validieren(aktuell_letzter_block['beweis'], nächster_beweis,
                                      blockchain.block_hashen(aktuell_letzter_block)) is False:
-        print("bad value")
         return jsonify("Block nicht valide."), 400
     else:
         global last_miner
@@ -257,8 +252,8 @@ def register():
             return jsonify("User schon registriert"), 200
     registered_users.append(nachricht['name'])
     signup_bonus = 0.0001 * total_supply / 100
+    total_supply = total_supply - signup_bonus
     blockchain.neue_transaktion(absender="SignupBonus", empfänger=nachricht['name'], betrag=signup_bonus)
-    print(registered_users)
     return jsonify("User registriert"), 200
 
 
