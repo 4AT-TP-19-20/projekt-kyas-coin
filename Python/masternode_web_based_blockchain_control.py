@@ -60,22 +60,16 @@ def blocktime():
             number_of_selected_users = math.ceil(len(registered_users) * 10 / 100)
             selected_users = []
             balance_selected_users = []
+            usable_registered_users = registered_users
             summed_up_balance = 0
 
             # Choose all the users to burn currency from
             while number_of_selected_users > 0:
-                already_selected = False
                 # Choose random name from registered_users list
-                unconfirmed_selected_user = random.choice(registered_users)
-                # Check if user has already been selected before
-                for u in selected_users:
-                    # If user has already been selected set already selected to True
-                    if unconfirmed_selected_user == u:
-                        already_selected = True
-                        continue
-                # If already selected is True get a new random user
-                if already_selected:
-                    continue
+                unconfirmed_selected_user = random.choice(usable_registered_users)
+                # Remove client from list so he can't be picked again
+                usable_registered_users.remove(unconfirmed_selected_user)
+
                 # Get clients current spendable balance
                 unconfirmed_balance_user = 0
                 for block in blockchain.chain:
