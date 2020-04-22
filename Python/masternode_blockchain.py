@@ -18,7 +18,7 @@ class Blockchain:
         while len(self.genesis_initial_users) < 1000:
             username = "user" + str(len(self.genesis_initial_users))
             self.genesis_initial_users.append(username)
-            random_number = random.randrange(200000, 1000000)
+            random_number = random.randrange(100000, 500000)
             self.neue_transaktion(absender="masternode", empfänger=username, betrag=random_number)
             self.genesis_distributed_money = self.genesis_distributed_money + random_number
 
@@ -39,6 +39,7 @@ class Blockchain:
             'absender': absender,
             'empfänger': empfänger,
             'betrag': betrag,
+            'index_block': len(self.chain)
         })
         if len(self.chain) == 0:
             return

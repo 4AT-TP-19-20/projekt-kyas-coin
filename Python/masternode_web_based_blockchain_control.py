@@ -16,7 +16,7 @@ already_mined = False
 block_count = 0
 next_halving = 7200
 total_supply = 1000000000
-max_ledger_burn_percentage = 0.25
+max_ledger_burn_percentage = 0.5
 registered_users = []
 
 
@@ -37,13 +37,11 @@ def blocktime():
         if first_time:
             if (int(time.time()) % 120) <= 5:
                 global blockchain
+                print(time.time() % 120)
                 blockchain = bc.Blockchain()
-
                 total_supply = total_supply - blockchain.genesis_distributed_money
-                print(total_supply)
                 for user in blockchain.genesis_initial_users:
                     registered_users.append(user)
-                print(len(registered_users))
 
                 first_time = False
                 nächster_beweis = 0
@@ -51,6 +49,7 @@ def blocktime():
                 block_count = block_count + 1
                 time.sleep(10)
         elif (int(time.time()) % 120) <= 5:
+            print(time.time() % 120)
             print("new block")
             if nächster_beweis == 0:
                 vorheriger_block = blockchain.letzter_block
@@ -101,20 +100,14 @@ def blocktime():
                 # Append clients balance to the balances of the selected users
                 balance_selected_users.append(unconfirmed_balance_user)
                 number_of_selected_users = number_of_selected_users - 1
-            print(selected_users)
             # Get summed up balance of all chosen users
             for b in balance_selected_users:
                 summed_up_balance = summed_up_balance + b
 
             # Burn value is 10% of summed up balance of selected users
             to_be_burned = summed_up_balance * 10 / 100
-            if to_be_burned > (max_ledger_burn_percentage*total_supply/100):
-                to_be_burned = max_ledger_burn_percentage*total_supply/100
-
-            # Only for testing purposes
-            print("Summed up balance: ", summed_up_balance)
-            print("To be burned balance: ", to_be_burned)
-            print("Total supply: ", total_supply - to_be_burned)
+            if to_be_burned > (max_ledger_burn_percentage * total_supply / 100):
+                to_be_burned = max_ledger_burn_percentage * total_supply / 100
 
             counter = 0
             while counter < len(selected_users):
@@ -256,13 +249,15 @@ def client_balance():
 
 @node.route('/register', methods=['POST'])
 def register():
-    # TODO: Possible signup bonus
     nachricht = request.get_json(force=True)
     global registered_users
+    global total_supply
     for user in registered_users:
         if user == nachricht['name']:
             return jsonify("User schon registriert"), 200
     registered_users.append(nachricht['name'])
+    signup_bonus = 0.0001 * total_supply / 100
+    blockchain.neue_transaktion(absender="SignupBonus", empfänger=nachricht['name'], betrag=signup_bonus)
     print(registered_users)
     return jsonify("User registriert"), 200
 
