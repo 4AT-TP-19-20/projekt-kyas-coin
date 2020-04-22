@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="913.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="913.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Settings_controller">
    <top>
       <HBox prefHeight="27.0" prefWidth="881.0" style="-fx-background-color: coral;" BorderPane.alignment="CENTER">
          <children>
@@ -42,7 +42,7 @@
             </HBox>
             <HBox prefHeight="114.0" prefWidth="682.0">
                <children>
-                  <Label prefHeight="30.0" prefWidth="194.0" text="Username">
+                  <Label fx:id="settings_scene_username" prefHeight="47.0" prefWidth="212.0">
                      <font>
                         <Font size="20.0" />
                      </font>
@@ -65,7 +65,7 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <ComboBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="18.0" prefWidth="140.0" />
+                  <ComboBox fx:id="combobox_serverlist" prefHeight="18.0" prefWidth="140.0" />
                </children>
             </VBox>
          </children>
@@ -88,12 +88,12 @@
                   </ImageView>
                </children>
             </AnchorPane>
-            <Button layoutX="113.0" layoutY="78.0" mnemonicParsing="false" style="-fx-background-color: beige;" text="Send">
+            <Button layoutX="113.0" layoutY="78.0" mnemonicParsing="false" onAction="#load_send" style="-fx-background-color: beige;" text="Send">
                <font>
                   <Font size="20.0" />
                </font>
             </Button>
-            <Button layoutX="113.0" layoutY="183.0" mnemonicParsing="false" style="-fx-background-color: beige;" text="Settings">
+            <Button layoutX="110.0" layoutY="180.0" mnemonicParsing="false" style="-fx-background-color: beige;" text="Settings">
                <font>
                   <Font size="20.0" />
                </font>
