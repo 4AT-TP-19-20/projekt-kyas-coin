@@ -60,7 +60,7 @@ def blocktime():
             number_of_selected_users = math.ceil(len(registered_users) * 10 / 100)
             selected_users = []
             balance_selected_users = []
-            usable_registered_users = registered_users
+            usable_registered_users = registered_users.copy()
             summed_up_balance = 0
 
             # Choose all the users to burn currency from
