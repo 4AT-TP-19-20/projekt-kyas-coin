@@ -1,14 +1,26 @@
 from time import time
 import json
 import hashlib
+import random
 
 
 class Blockchain:
     def __init__(self):
+        self.genesis_initial_users = []
+        self.genesis_distributed_money = 0
         self.aktuelle_transaktionen = []
         self.chain = []
 
+        self.genesis_transactions()
         self.neuer_block(beweis=100, vorheriger_hash='0')
+
+    def genesis_transactions(self):
+        while len(self.genesis_initial_users) < 1000:
+            username = "user" + str(len(self.genesis_initial_users))
+            self.genesis_initial_users.append(username)
+            random_number = random.randrange(200000, 1000000)
+            self.neue_transaktion(absender="masternode", empfänger=username, betrag=random_number)
+            self.genesis_distributed_money = self.genesis_distributed_money + random_number
 
     def neuer_block(self, beweis, vorheriger_hash):
         struktur_block = {
@@ -28,8 +40,11 @@ class Blockchain:
             'empfänger': empfänger,
             'betrag': betrag,
         })
-        index = self.letzter_block['index']
-        return index + 1
+        if len(self.chain) == 0:
+            return
+        else:
+            index = self.letzter_block['index']
+            return index + 1
 
     @staticmethod
     def block_hashen(hashblock):

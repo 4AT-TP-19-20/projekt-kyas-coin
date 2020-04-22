@@ -11,11 +11,12 @@ first_time = True
 node = Flask("__name__")
 nächster_beweis = 0
 last_miner = ""
-block_reward = 500
+block_reward = 50000
 already_mined = False
 block_count = 0
 next_halving = 7200
 total_supply = 1000000000
+max_ledger_burn_percentage = 0.25
 registered_users = []
 
 
@@ -25,8 +26,10 @@ def blocktime():
         global nächster_beweis
         global block_reward
         global already_mined
+        global registered_users
         global block_count
         global total_supply
+        global max_ledger_burn_percentage
         global next_halving
         if block_count == next_halving:
             block_reward = block_reward / 2
@@ -35,6 +38,13 @@ def blocktime():
             if (int(time.time()) % 120) <= 5:
                 global blockchain
                 blockchain = bc.Blockchain()
+
+                total_supply = total_supply - blockchain.genesis_distributed_money
+                print(total_supply)
+                for user in blockchain.genesis_initial_users:
+                    registered_users.append(user)
+                print(len(registered_users))
+
                 first_time = False
                 nächster_beweis = 0
                 print("genesis")
@@ -50,13 +60,82 @@ def blocktime():
                 blockchain.neue_transaktion(absender="masternode", empfänger=last_miner, betrag=block_reward)
                 total_supply = total_supply - block_reward
                 pass
+
+            # Burn
+            number_of_selected_users = math.ceil(len(registered_users) * 10 / 100)
+            selected_users = []
+            balance_selected_users = []
+            summed_up_balance = 0
+
+            # Choose all the users to burn currency from
+            while number_of_selected_users > 0:
+                already_selected = False
+                # Choose random name from registered_users list
+                unconfirmed_selected_user = random.choice(registered_users)
+                # Check if user has already been selected before
+                for u in selected_users:
+                    # If user has already been selected set already selected to True
+                    if unconfirmed_selected_user == u:
+                        already_selected = True
+                        continue
+                # If already selected is True get a new random user
+                if already_selected:
+                    continue
+                # Get clients current spendable balance
+                unconfirmed_balance_user = 0
+                for block in blockchain.chain:
+                    block_transaktionen = block['transaktionen']
+                    for t in block_transaktionen:
+                        if t['absender'] == unconfirmed_selected_user:
+                            unconfirmed_balance_user = unconfirmed_balance_user - t['betrag']
+                        elif t['empfänger'] == unconfirmed_selected_user:
+                            unconfirmed_balance_user = unconfirmed_balance_user + t['betrag']
+                for m in blockchain.aktuelle_transaktionen:
+                    if m['absender'] == unconfirmed_selected_user:
+                        unconfirmed_balance_user = unconfirmed_balance_user - m['betrag']
+                # If clients balance is zero get a new random client
+                if unconfirmed_balance_user <= 0:
+                    continue
+                # If clients balance is greater than zero add client to selected users
+                selected_users.append(unconfirmed_selected_user)
+                # Append clients balance to the balances of the selected users
+                balance_selected_users.append(unconfirmed_balance_user)
+                number_of_selected_users = number_of_selected_users - 1
+            print(selected_users)
+            # Get summed up balance of all chosen users
+            for b in balance_selected_users:
+                summed_up_balance = summed_up_balance + b
+
+            # Burn value is 10% of summed up balance of selected users
+            to_be_burned = summed_up_balance * 10 / 100
+            if to_be_burned > (max_ledger_burn_percentage*total_supply/100):
+                to_be_burned = max_ledger_burn_percentage*total_supply/100
+
+            # Only for testing purposes
+            print("Summed up balance: ", summed_up_balance)
+            print("To be burned balance: ", to_be_burned)
+            print("Total supply: ", total_supply - to_be_burned)
+
+            counter = 0
+            while counter < len(selected_users):
+                # Percentage client has to burn is calculated
+                client_burn_percentage = balance_selected_users[counter] * 100 / summed_up_balance
+                # Value each client has to burn is calculated
+                client_burn_value = client_burn_percentage * to_be_burned / 100
+                # Currency is burned
+                blockchain.neue_transaktion(absender=selected_users[counter], empfänger="Burner",
+                                            betrag=client_burn_value)
+                counter = counter + 1
+
+            # Burned currency is removed from total supply
+            total_supply = total_supply - to_be_burned
+
+            # New Block
             aktuell_letzter_block = blockchain.chain[-1]
             blockchain.neuer_block(nächster_beweis, blockchain.block_hashen(aktuell_letzter_block))
             block_count = block_count + 1
             already_mined = False
             nächster_beweis = 0
-
-            # Burn
 
             time.sleep(10)
 
@@ -177,6 +256,7 @@ def client_balance():
 
 @node.route('/register', methods=['POST'])
 def register():
+    # TODO: Possible signup bonus
     nachricht = request.get_json(force=True)
     global registered_users
     for user in registered_users:
