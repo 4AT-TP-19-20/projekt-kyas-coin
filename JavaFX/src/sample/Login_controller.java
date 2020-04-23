@@ -16,7 +16,25 @@ public class Login_controller {
     public static String username;
     public static Scene settings_scene, send_scene;
 
-    public void initialize(){
+
+    public void reset_to_login_screen() {
+        try {
+            API_operations.balance.set(0, "0");
+            Parent settings_changer = FXMLLoader.load(getClass().getResource("kyas_settings.fxml"));
+            settings_scene = new Scene(settings_changer);
+            Parent send_changer = FXMLLoader.load(getClass().getResource("kyas_send.fxml"));
+            send_scene = new Scene(send_changer);
+            Parent login_changer = FXMLLoader.load(getClass().getResource("kyas_login.fxml"));
+            Scene login_scene = new Scene(login_changer);
+            Main.mainstage.setScene(login_scene);
+            Main.mainstage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void login(ActionEvent actionEvent) throws IOException {
+        username = login_screen_username.getText();
         try {
             Parent settings_changer = FXMLLoader.load(getClass().getResource("kyas_settings.fxml"));
             settings_scene = new Scene(settings_changer);
@@ -25,10 +43,6 @@ public class Login_controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void login(ActionEvent actionEvent) throws IOException {
-        username = login_screen_username.getText();
         Main.mainstage.setScene(settings_scene);
         Main.mainstage.show();
     }
