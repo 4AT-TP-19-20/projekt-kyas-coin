@@ -24,7 +24,7 @@ public class Settings_controller extends Login_controller {
 
 
     public void initialize() {
-        settings_scene_username.setText(Login_controller.username);
+        settings_scene_username.setText("Welcome " + Login_controller.username);
         api = new API_operations();
         combobox_serverlist.getItems().addAll(api.masternodes);
         API_operations.balance.add("0");
@@ -71,7 +71,7 @@ public class Settings_controller extends Login_controller {
         if (first_time) {
             api.set_masternode();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Press okay to synchronize blockchain\nPlease wait until finished");
+            alert.setContentText("Press okay to synchronize balance\nPlease wait until finished");
             alert.showAndWait();
             api.register_user();
             api.get_balance();
@@ -79,7 +79,7 @@ public class Settings_controller extends Login_controller {
             return;
         }
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Press okay to synchronize blockchain\nPlease wait until finished");
+        alert.setContentText("Press okay to synchronize balance\nPlease wait until finished");
         alert.showAndWait();
         Settings_controller.api.get_balance();
     }

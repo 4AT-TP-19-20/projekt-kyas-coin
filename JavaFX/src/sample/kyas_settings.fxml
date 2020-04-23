@@ -5,100 +5,107 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="913.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Settings_controller">
-   <top>
-      <HBox prefHeight="27.0" prefWidth="881.0" style="-fx-background-color: coral;" BorderPane.alignment="CENTER">
-         <children>
-            <ImageView fitHeight="52.0" fitWidth="52.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@logo.png" />
-               </image>
-            </ImageView>
-            <Label prefHeight="57.0" prefWidth="210.0" text=" KYAS-Coin" textFill="#8f0816">
-               <font>
-                  <Font size="23.0" />
-               </font>
-            </Label>
-            <VBox alignment="CENTER_RIGHT" prefHeight="8.0" prefWidth="814.0">
-               <children>
-                  <Button alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#reset" style="-fx-background-color: coral;" text="Logout" textFill="#8f0816" />
-                  <Button mnemonicParsing="false" onAction="#synchronize" style="-fx-background-color: coral;" text="Synchronize" textFill="#8f0816" />
-               </children>
-            </VBox>
-         </children>
-      </HBox>
-   </top>
-   <center>
-      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox prefHeight="58.0" prefWidth="682.0">
-               <children>
-                  <Label text="Settings">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="913.0" style="-fx-background-color: #36393f;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Settings_controller">
+    <top>
+        <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="915.0" style="-fx-background-color: #ff5414;" BorderPane.alignment="CENTER_RIGHT">
+            <children>
+                <ImageView fitHeight="63.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@logo.png" />
+                    </image>
+                </ImageView>
+                <Label prefHeight="63.0" prefWidth="592.0" style="-fx-background-color: #ff5414;" text=" KYAS-Coin" textFill="#2f3136">
+                    <font>
+                        <Font size="23.0" />
+                    </font>
+                </Label>
+                <VBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="62.0" prefWidth="235.0" style="-fx-background-color: #ff5414;">
+                    <children>
+                        <Button alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#reset" style="-fx-background-color: #ff5414;" text="Logout" textFill="#2f3136">
                      <font>
-                        <Font size="38.0" />
-                     </font>
-                  </Label>
-               </children>
-            </HBox>
-            <HBox prefHeight="114.0" prefWidth="682.0">
-               <children>
-                  <Label fx:id="settings_scene_username" prefHeight="47.0" prefWidth="212.0">
+                        <Font size="14.0" />
+                     </font></Button>
+                        <Button maxHeight="-Infinity" minHeight="-Infinity" mnemonicParsing="false" onAction="#synchronize" prefHeight="33.0" prefWidth="107.0" style="-fx-background-color: #ff5414;" text="Synchronize" textFill="#2f3136">
                      <font>
-                        <Font size="20.0" />
-                     </font>
-                  </Label>
-                  <VBox alignment="TOP_RIGHT" prefHeight="52.0" prefWidth="487.0">
-                     <children>
-                        <Label fx:id="settings_balance" text="x.xxxxxxx Cash= x.xx€">
-                           <font>
-                              <Font size="20.0" />
-                           </font>
+                        <Font size="14.0" />
+                     </font></Button>
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+    </top>
+    <center>
+        <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="627.0" prefWidth="638.0" style="-fx-background-color: #36393f;" BorderPane.alignment="CENTER">
+            <children>
+                <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="623.0" style="-fx-background-color: #36393f;">
+                    <children>
+                        <Label text="Settings" textFill="WHITE">
+                            <font>
+                                <Font size="38.0" />
+                            </font>
                         </Label>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-            <VBox prefHeight="114.0" prefWidth="682.0">
-               <children>
-                  <Label text="Choose server">
-                     <font>
+                    </children>
+                </HBox>
+                <HBox prefHeight="114.0" prefWidth="682.0" style="-fx-background-color: #36393f;">
+                    <children>
+                        <Label fx:id="settings_scene_username" prefHeight="48.0" prefWidth="286.0" style="-fx-background-color: #36393f;" textFill="WHITE">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                        </Label>
+                        <VBox alignment="TOP_RIGHT" prefHeight="52.0" prefWidth="487.0" style="-fx-background-color: #36393f;">
+                            <children>
+                                <Label fx:id="settings_balance" prefHeight="48.0" prefWidth="238.0" text="x.xxxxxxx Cash= x.xx€" textFill="WHITE">
+                                    <font>
+                                        <Font size="20.0" />
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </children>
+                </HBox>
+                <VBox prefHeight="114.0" prefWidth="682.0" style="-fx-background-color: #36393f;">
+                    <children>
+                        <Label text="Masternodes" textFill="WHITE">
+                            <font>
+                                <Font size="20.0" />
+                            </font>
+                        </Label>
+                  <ComboBox fx:id="combobox_serverlist" prefWidth="150.0" style="-fx-background-color: #2f3136; -fx-text-fill: white;" />
+                    </children>
+                </VBox>
+                <VBox prefHeight="76.0" prefWidth="682.0" style="-fx-background-color: #36393f;" />
+            </children>
+        </VBox>
+    </center>
+    <left>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="626.0" prefWidth="211.0" style="-fx-background-color: #2f3136;" BorderPane.alignment="CENTER">
+            <children>
+                <AnchorPane layoutY="1.0" prefHeight="638.0" prefWidth="78.0">
+                    <children>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icons8-settings-96.png" />
+                            </image>
+                        </ImageView>
+                        <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="15.0" layoutY="63.0" pickOnBounds="true" preserveRatio="true">
+                            <image>
+                                <Image url="@icons8-forward-arrow-90.png" />
+                            </image>
+                        </ImageView>
+                    </children>
+                </AnchorPane>
+                <Button layoutX="75.0" layoutY="65.0" mnemonicParsing="false" onAction="#load_send" style="-fx-background-color: #36393f;" text="Send" textFill="WHITE">
+                    <font>
                         <Font size="20.0" />
-                     </font>
-                  </Label>
-                  <ComboBox fx:id="combobox_serverlist" prefHeight="18.0" prefWidth="140.0" />
-               </children>
-            </VBox>
-         </children>
-      </VBox>
-   </center>
-   <left>
-      <AnchorPane prefHeight="639.0" prefWidth="231.0" style="-fx-background-color: beige;" BorderPane.alignment="CENTER">
-         <children>
-            <AnchorPane layoutY="1.0" prefHeight="638.0" prefWidth="78.0">
-               <children>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="172.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icons8-settings-96.png" />
-                     </image>
-                  </ImageView>
-                  <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="15.0" layoutY="63.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@icons8-forward-arrow-90.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </AnchorPane>
-            <Button layoutX="113.0" layoutY="78.0" mnemonicParsing="false" onAction="#load_send" style="-fx-background-color: beige;" text="Send">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Button>
-            <Button layoutX="110.0" layoutY="180.0" mnemonicParsing="false" style="-fx-background-color: beige;" text="Settings">
-               <font>
-                  <Font size="20.0" />
-               </font>
-            </Button>
-         </children>
-      </AnchorPane>
-   </left>
+                    </font>
+                </Button>
+                <Button layoutX="75.0" layoutY="180.0" mnemonicParsing="false" style="-fx-background-color: #36393f;" text="Settings" textFill="WHITE">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Button>
+            </children>
+        </AnchorPane>
+    </left>
 </BorderPane>

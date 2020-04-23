@@ -19,7 +19,7 @@ public class Send_controller extends Login_controller{
     public TextField amount;
 
     public void initialize() {
-        send_scene_username.setText(Login_controller.username);
+        send_scene_username.setText("Welcome " + Login_controller.username);
         API_operations.balance.addListener(new ListChangeListener<String>() {
             @Override
             public void onChanged(Change<? extends String> change) {
