@@ -58,9 +58,15 @@ public class API_operations {
             }
             connection.disconnect();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
         } catch (IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
         }
 
     }
@@ -88,9 +94,15 @@ public class API_operations {
             balance.set(0, n.concat(content.toString()));
             connection.disconnect();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
         } catch (IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
         }
 
     }
@@ -125,9 +137,15 @@ public class API_operations {
                 }
                 connection.disconnect();
             } catch (MalformedURLException e) {
-                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("No response from local node\nQuitting...");
+                alert.showAndWait();
+                System.exit(1);
             } catch (IOException e) {
-                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("No response from local node\nQuitting...");
+                alert.showAndWait();
+                System.exit(1);
             }
         }
     }
@@ -173,9 +191,15 @@ public class API_operations {
             }
             connection.disconnect();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
         } catch (IOException e) {
-            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
         }
     }
 }
