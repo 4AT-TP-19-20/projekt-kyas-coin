@@ -97,7 +97,6 @@ public class API_operations {
 
     public void set_masternode() {
         if (Settings_controller.selected_masternode.equals(masternodes.get(0))) {
-
             try {
                 URL url = new URL("http://localhost:2169/set/masternode");
                 var parameters = "{\"masternode\": \"http://173.212.211.222:2169\"}";
@@ -145,19 +144,31 @@ public class API_operations {
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setConnectTimeout(120000);
             connection.setReadTimeout(120000);
+
             var writer = new DataOutputStream(connection.getOutputStream());
             writer.write(postData);
             StringBuilder content;
+            if (connection.getResponseCode() == 500) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Balance not sufficient. Updating balance.");
+                alert.show();
+                get_balance();
+            }
+            if (connection.getResponseCode() == 201) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setContentText("Transaction successful. Updating balance.");
+                alert.show();
+                get_balance();
+                try (var br = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()))) {
 
-            try (var br = new BufferedReader(
-                    new InputStreamReader(connection.getInputStream()))) {
+                    String line;
+                    content = new StringBuilder();
 
-                String line;
-                content = new StringBuilder();
-
-                while ((line = br.readLine()) != null) {
-                    content.append(line);
-                    content.append(System.lineSeparator());
+                    while ((line = br.readLine()) != null) {
+                        content.append(line);
+                        content.append(System.lineSeparator());
+                    }
                 }
             }
             connection.disconnect();
@@ -167,5 +178,6 @@ public class API_operations {
             e.printStackTrace();
         }
     }
-    }
+}
+
 

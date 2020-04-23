@@ -19,11 +19,12 @@ public class Settings_controller extends Login_controller {
     public ComboBox<String> combobox_serverlist;
     public static String selected_masternode;
     public static API_operations api;
-    public boolean first_time = true;
+    public boolean first_time;
     public Label settings_balance;
 
 
     public void initialize() {
+        first_time = true;
         settings_scene_username.setText("Welcome " + Login_controller.username);
         api = new API_operations();
         combobox_serverlist.getItems().addAll(api.masternodes);
@@ -42,14 +43,14 @@ public class Settings_controller extends Login_controller {
         selected_masternode = combobox_serverlist.getValue();
         if (selected_masternode == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("Please choose a masternode to sync from.");
+            alert.setContentText("Please choose a Masternode to sync from.");
             alert.show();
             return;
         }
         if (first_time) {
             api.set_masternode();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Press okay to synchronize balance\nPlease wait until finished");
+            alert.setContentText("Balance synchronizing\nPlease wait until finished");
             alert.showAndWait();
             api.register_user();
             api.get_balance();
@@ -64,24 +65,28 @@ public class Settings_controller extends Login_controller {
         selected_masternode = combobox_serverlist.getValue();
         if (selected_masternode == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("Please choose a masternode to sync from.");
+            alert.setContentText("Please choose a Masternode to sync from.");
             alert.show();
             return;
         }
         if (first_time) {
             api.set_masternode();
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setContentText("Press okay to synchronize balance\nPlease wait until finished");
+            alert.setContentText("Balance synchronizing\nPlease wait until finished");
             alert.showAndWait();
             api.register_user();
             api.get_balance();
+            alert.setContentText("Balance synchronized");
+            alert.show();
             first_time = false;
             return;
         }
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Press okay to synchronize balance\nPlease wait until finished");
-        alert.showAndWait();
+        alert.setContentText("Balance synchronizing\nPlease wait until finished");
+        alert.show();
         Settings_controller.api.get_balance();
+        alert.setContentText("Balance synchronized");
+        alert.show();
     }
 
     public void reset(ActionEvent actionEvent) {
