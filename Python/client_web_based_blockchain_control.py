@@ -63,7 +63,7 @@ def neue_transaktion():
     if antwort.status_code == 200:
         antwort_payload = antwort.json()
         balance = antwort_payload['balance']
-        if balance < betrag:
+        if balance < float(betrag):
             return jsonify("Balance nicht ausreichend"), 500
     t = {
         'absender': name,
@@ -121,7 +121,7 @@ def spezifische_balance():
     }
     antwort = requests.post(f'http://{masternode}/client/balance', json=nachricht)
     if antwort.status_code == 200:
-        return jsonify(antwort.json()), 200
+        return jsonify(antwort.json()['balance']), 200
     else:
         return jsonify(), 500
 
