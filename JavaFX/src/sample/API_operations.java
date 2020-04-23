@@ -1,5 +1,7 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 
 import java.io.BufferedReader;
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 
@@ -18,6 +21,7 @@ import java.util.ArrayList;
 public class API_operations {
     public ArrayList<String> masternodes = new ArrayList<>();
     public ArrayList<String> masternode_urls = new ArrayList<>();
+    public static ObservableList<String> balance = FXCollections.observableArrayList();
 
     API_operations() {
         masternodes.add("vmi332355.contaboserver.net");
@@ -25,7 +29,7 @@ public class API_operations {
     }
 
 
-    void register_user() {
+    public void register_user() {
         try {
             URL url = new URL("http://localhost:2169/set/name");
             var parameters = "{\"name\": \"" + Login_controller.username + "\"}";
@@ -35,6 +39,8 @@ public class API_operations {
             connection.setRequestMethod("POST");
             connection.setRequestProperty("User-Agent", "Java client");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setConnectTimeout(120000);
+            connection.setReadTimeout(120000);
             var writer = new DataOutputStream(connection.getOutputStream());
             writer.write(postData);
             StringBuilder content;
@@ -60,12 +66,13 @@ public class API_operations {
     }
 
 
-    void get_full_update() throws IOException {
-
+    public void get_balance() throws IOException {
         try {
-            URL url = new URL("http://localhost:2169/get/full/update");
+            URL url = new URL("http://localhost:2169/spezifische/balance");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.setConnectTimeout(120000);
+            connection.setReadTimeout(120000);
             StringBuilder content;
             try (var br = new BufferedReader(
                     new InputStreamReader(connection.getInputStream()))) {
@@ -77,6 +84,8 @@ public class API_operations {
                     content.append(System.lineSeparator());
                 }
             }
+            String n = "KYS ";
+            balance.set(0, n.concat(content.toString()));
             connection.disconnect();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -86,7 +95,7 @@ public class API_operations {
 
     }
 
-    void set_masternode() {
+    public void set_masternode() {
         if (Settings_controller.selected_masternode.equals(masternodes.get(0))) {
 
             try {
@@ -98,6 +107,8 @@ public class API_operations {
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("User-Agent", "Java client");
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                connection.setConnectTimeout(120000);
+                connection.setReadTimeout(120000);
                 var writer = new DataOutputStream(connection.getOutputStream());
                 writer.write(postData);
                 StringBuilder content;
@@ -119,9 +130,42 @@ public class API_operations {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 
-}
+    public void new_transaction(String empfänger, float betrag) {
+        try {
+            URL url = new URL("http://localhost:2169/transaktionen/neu");
+            var parameters = "{\"empfänger\": \"" + empfänger + "\", \"betrag\": " + betrag + "}";
+            byte[] postData = parameters.getBytes(StandardCharsets.UTF_8);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("User-Agent", "Java client");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setConnectTimeout(120000);
+            connection.setReadTimeout(120000);
+            var writer = new DataOutputStream(connection.getOutputStream());
+            writer.write(postData);
+            StringBuilder content;
+
+            try (var br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()))) {
+
+                String line;
+                content = new StringBuilder();
+
+                while ((line = br.readLine()) != null) {
+                    content.append(line);
+                    content.append(System.lineSeparator());
+                }
+            }
+            connection.disconnect();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    }
+

@@ -21,8 +21,8 @@
             </Label>
             <VBox alignment="CENTER_RIGHT" prefHeight="8.0" prefWidth="814.0">
                <children>
-                  <Button alignment="TOP_RIGHT" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" style="-fx-background-color: coral;" text="Logout" textFill="#8f0816" />
-                  <Button mnemonicParsing="false" onAction="#synchronize" prefHeight="26.0" prefWidth="103.0" style="-fx-background-color: coral;" text="Synchronize" textFill="#8f0816" />
+                  <Button alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#reset" style="-fx-background-color: coral;" text="Logout" textFill="#8f0816" />
+                  <Button mnemonicParsing="false" onAction="#synchronize" style="-fx-background-color: coral;" text="Synchronize" textFill="#8f0816" />
                </children>
             </VBox>
          </children>
@@ -49,7 +49,7 @@
                   </Label>
                   <VBox alignment="TOP_RIGHT" prefHeight="52.0" prefWidth="487.0">
                      <children>
-                        <Label text="x.xxxxxxx Cash= x.xx€">
+                        <Label fx:id="settings_balance" text="x.xxxxxxx Cash= x.xx€">
                            <font>
                               <Font size="20.0" />
                            </font>
