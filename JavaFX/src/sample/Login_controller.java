@@ -25,7 +25,6 @@ public class Login_controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void login(ActionEvent actionEvent) throws IOException {

@@ -16,6 +16,7 @@ public class Settings_controller {
     public ComboBox<String> combobox_serverlist;
     public static String selected_masternode;
     public static API_operations api;
+    public boolean first_time = true;
 
     public void initialize() {
         settings_scene_username.setText(Login_controller.username);
@@ -31,7 +32,11 @@ public class Settings_controller {
             alert.show();
             return;
         }
-        combobox_serverlist.getEditor().setEditable(false);
+        if (first_time) {
+            api.set_masternode();
+            api.register_user();
+            first_time = false;
+        }
         Main.mainstage.setScene(Login_controller.send_scene);
         Main.mainstage.show();
     }
