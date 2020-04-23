@@ -36,9 +36,11 @@ public class Send_controller extends Login_controller{
 
     public void synchronize(ActionEvent actionEvent) throws IOException {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setContentText("Press okay to synchronize balance\nPlease wait until finished");
+        alert.setContentText("Balance synchronizing\nPlease wait until finished");
         alert.showAndWait();
         Settings_controller.api.get_balance();
+        alert.setContentText("Balance synchronized");
+        alert.show();
     }
 
     public void reset(ActionEvent actionEvent) {

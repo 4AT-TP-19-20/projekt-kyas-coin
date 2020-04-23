@@ -55,7 +55,7 @@
                         </Label>
                         <VBox alignment="TOP_RIGHT" prefHeight="52.0" prefWidth="487.0" style="-fx-background-color: #36393f;">
                             <children>
-                                <Label fx:id="settings_balance" prefHeight="48.0" prefWidth="238.0" text="x.xxxxxxx Cash= x.xx€" textFill="WHITE">
+                                <Label fx:id="settings_balance" prefHeight="48.0" prefWidth="300.0" text="x.xxxxxxx Cash= x.xx€" textFill="WHITE">
                                     <font>
                                         <Font size="20.0" />
                                     </font>
@@ -93,6 +93,11 @@
                                 <Image url="@icons8-forward-arrow-90.png" />
                             </image>
                         </ImageView>
+                  <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="14.0" layoutY="281.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@mining.png" />
+                     </image>
+                  </ImageView>
                     </children>
                 </AnchorPane>
                 <Button layoutX="75.0" layoutY="65.0" mnemonicParsing="false" onAction="#load_send" style="-fx-background-color: #36393f;" text="Send" textFill="WHITE">
