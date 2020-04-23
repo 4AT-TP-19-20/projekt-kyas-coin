@@ -22,7 +22,7 @@
                 <VBox alignment="CENTER_RIGHT" prefHeight="8.0" prefWidth="814.0">
                     <children>
                         <Button alignment="TOP_RIGHT" mnemonicParsing="false" prefHeight="26.0" prefWidth="95.0" style="-fx-background-color: coral;" text="Logout" textFill="#8f0816" />
-                        <Button mnemonicParsing="false" style="-fx-background-color: coral;" text="Synchronize" textFill="#8f0816" />
+                        <Button mnemonicParsing="false" onAction="#synchronize" style="-fx-background-color: coral;" text="Synchronize" textFill="#8f0816" />
                     </children>
                 </VBox>
             </children>

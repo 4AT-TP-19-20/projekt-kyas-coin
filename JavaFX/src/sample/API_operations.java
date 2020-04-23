@@ -8,15 +8,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
+
 
 public class API_operations {
     public ArrayList<String> masternodes = new ArrayList<>();
@@ -27,82 +24,101 @@ public class API_operations {
         masternode_urls.add("http://173.212.211.222:2169");
     }
 
+
     void register_user() {
-        if (Settings_controller.selected_masternode.equals(masternodes.get(0))) {
-            new Thread(() -> {
-                try {
-                    URL url = new URL("http://localhost:2169/set/name");
-                    var parameters = "{\"name\": \"" + Login_controller.username + "\"}";
-                    byte[] postData = parameters.getBytes(StandardCharsets.UTF_8);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setDoOutput(true);
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("User-Agent", "Java client");
-                    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                    var writer = new DataOutputStream(connection.getOutputStream());
-                    writer.write(postData);
-                    StringBuilder content;
+        try {
+            URL url = new URL("http://localhost:2169/set/name");
+            var parameters = "{\"name\": \"" + Login_controller.username + "\"}";
+            byte[] postData = parameters.getBytes(StandardCharsets.UTF_8);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("User-Agent", "Java client");
+            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            var writer = new DataOutputStream(connection.getOutputStream());
+            writer.write(postData);
+            StringBuilder content;
 
-                    try (var br = new BufferedReader(
-                            new InputStreamReader(connection.getInputStream()))) {
+            try (var br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()))) {
 
-                        String line;
-                        content = new StringBuilder();
+                String line;
+                content = new StringBuilder();
 
-                        while ((line = br.readLine()) != null) {
-                            content.append(line);
-                            content.append(System.lineSeparator());
-                        }
-                    }
-                    connection.disconnect();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                while ((line = br.readLine()) != null) {
+                    content.append(line);
+                    content.append(System.lineSeparator());
                 }
-            }).start();
+            }
+            connection.disconnect();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
+
 
     void get_full_update() throws IOException {
 
+        try {
+            URL url = new URL("http://localhost:2169/get/full/update");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            StringBuilder content;
+            try (var br = new BufferedReader(
+                    new InputStreamReader(connection.getInputStream()))) {
+                String line;
+                content = new StringBuilder();
+
+                while ((line = br.readLine()) != null) {
+                    content.append(line);
+                    content.append(System.lineSeparator());
+                }
+            }
+            connection.disconnect();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
     void set_masternode() {
         if (Settings_controller.selected_masternode.equals(masternodes.get(0))) {
-            new Thread(() -> {
-                try {
-                    URL url = new URL("http://localhost:2169/set/masternode");
-                    var parameters = "{\"masternode\": \"http://173.212.211.222:2169\"}";
-                    byte[] postData = parameters.getBytes(StandardCharsets.UTF_8);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setDoOutput(true);
-                    connection.setRequestMethod("POST");
-                    connection.setRequestProperty("User-Agent", "Java client");
-                    connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                    var writer = new DataOutputStream(connection.getOutputStream());
-                    writer.write(postData);
-                    StringBuilder content;
 
-                    try (var br = new BufferedReader(
-                            new InputStreamReader(connection.getInputStream()))) {
+            try {
+                URL url = new URL("http://localhost:2169/set/masternode");
+                var parameters = "{\"masternode\": \"http://173.212.211.222:2169\"}";
+                byte[] postData = parameters.getBytes(StandardCharsets.UTF_8);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("User-Agent", "Java client");
+                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                var writer = new DataOutputStream(connection.getOutputStream());
+                writer.write(postData);
+                StringBuilder content;
 
-                        String line;
-                        content = new StringBuilder();
+                try (var br = new BufferedReader(
+                        new InputStreamReader(connection.getInputStream()))) {
 
-                        while ((line = br.readLine()) != null) {
-                            content.append(line);
-                            content.append(System.lineSeparator());
-                        }
+                    String line;
+                    content = new StringBuilder();
+
+                    while ((line = br.readLine()) != null) {
+                        content.append(line);
+                        content.append(System.lineSeparator());
                     }
-                    connection.disconnect();
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-            }).start();
+                connection.disconnect();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
 
         }

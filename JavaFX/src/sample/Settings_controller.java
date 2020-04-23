@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 
@@ -24,7 +25,7 @@ public class Settings_controller {
         combobox_serverlist.getItems().addAll(api.masternodes);
     }
 
-    public void load_send(ActionEvent actionEvent) throws IOException {
+    public void load_send(ActionEvent actionEvent) throws IOException, InterruptedException {
         selected_masternode = combobox_serverlist.getValue();
         if (selected_masternode == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -34,10 +35,30 @@ public class Settings_controller {
         }
         if (first_time) {
             api.set_masternode();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Press okay to synchronize blockchain\nPlease wait until finished");
+            alert.showAndWait();
             api.register_user();
+            api.get_full_update();
             first_time = false;
         }
         Main.mainstage.setScene(Login_controller.send_scene);
         Main.mainstage.show();
+    }
+
+    public void synchronize(ActionEvent actionEvent) throws IOException {
+        if (first_time) {
+            api.set_masternode();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Press okay to synchronize blockchain\nPlease wait until finished");
+            alert.showAndWait();
+            api.register_user();
+            api.get_full_update();
+            first_time = false;
+        }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setContentText("Press okay to synchronize blockchain\nPlease wait until finished");
+        alert.showAndWait();
+        api.get_full_update();
     }
 }
