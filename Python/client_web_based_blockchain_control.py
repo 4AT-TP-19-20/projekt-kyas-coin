@@ -8,7 +8,7 @@ import threading
 knotenpunkt = Flask(__name__)
 einzigartiger_name_knotenpunkt = str(uuid4()).replace('-', '')
 blockchain = bc.Blockchain()
-masternode = urlparse("http://173.212.211.222:2169").netloc
+masternode = ""
 name = ""
 
 
@@ -136,6 +136,14 @@ def set_name():
     }
     register = requests.post(f'http://{masternode}/register', json=senden)
     return jsonify("Name wurde auf " + name + " gesetzt"), 200
+
+
+@knotenpunkt.route('/set/masternode', methods=['POST'])
+def set_masternode():
+    nachricht = request.get_json(force=True)
+    global masternode
+    masternode = urlparse(nachricht['masternode']).netloc
+    return jsonify("Masternode set to: " + masternode), 200
 
 
 def periodic_update():
