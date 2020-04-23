@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SettingsActivity">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/new_expense_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:hapticFeedbackEnabled="false"
+        app:layout_anchorGravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+
+        <ImageView
+            android:id="@+id/save_settings_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@color/colorPrimary"
+            android:contentDescription="@string/save"
+            android:scaleType="center" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <EditText
+        android:id="@+id/newAddressEt"
+        android:layout_width="346dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="36dp"
+        android:cursorVisible="true"
+        android:ems="10"
+        android:hint="@string/New_Address"
+        android:importantForAutofill="no"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/currentAddressTv" />
+
+    <TextView
+        android:id="@+id/currentAddressTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="36dp"
+        android:text="No Address, please set one"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/new_expense_toolbar" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
