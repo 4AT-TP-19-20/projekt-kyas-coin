@@ -74,7 +74,7 @@ public class API_operations {
 
     public void get_balance() throws IOException {
         try {
-            URL url = new URL("http://localhost:2169/spezifische/balance");
+            URL url = new URL("http://localhost:2169/specific/balance");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(120000);
@@ -152,8 +152,8 @@ public class API_operations {
 
     public void new_transaction(String empfänger, float betrag) {
         try {
-            URL url = new URL("http://localhost:2169/transaktionen/neu");
-            var parameters = "{\"empfänger\": \"" + empfänger + "\", \"betrag\": " + betrag + "}";
+            URL url = new URL("http://localhost:2169/transactions/new");
+            var parameters = "{\"recipient\": \"" + empfänger + "\", \"amount\": " + betrag + "}";
             byte[] postData = parameters.getBytes(StandardCharsets.UTF_8);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
@@ -201,6 +201,37 @@ public class API_operations {
             alert.showAndWait();
             System.exit(1);
         }
+    }
+
+    public void mining() {
+        try {
+            URL url = new URL("http://localhost:2169/mine");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(120000);
+            connection.setReadTimeout(120000);
+            if (connection.getResponseCode() == 200) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setContentText("Block has been successfully mined.\nReward will be added to the next block.");
+                alert.show();
+            } else if (connection.getResponseCode() == 500){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("POW has already been calculated by someone else!\nPlease wait until next block.");
+                alert.show();
+            }
+            connection.disconnect();
+        } catch (MalformedURLException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node mu\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("No response from local node io\nQuitting...");
+            alert.showAndWait();
+            System.exit(1);
+        }
+
     }
 }
 

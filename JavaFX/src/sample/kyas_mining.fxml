@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="913.0" style="-fx-background-color: #36393f;" stylesheets="@settings_scene.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Settings_controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="690.0" prefWidth="913.0" style="-fx-background-color: #36393f;" stylesheets="@settings_scene.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Mining_controller">
     <top>
         <HBox alignment="CENTER_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="64.0" prefWidth="915.0" style="-fx-background-color: #ff5414;" BorderPane.alignment="CENTER_RIGHT">
             <children>
@@ -53,7 +53,7 @@
                 </HBox>
                 <HBox prefHeight="114.0" prefWidth="682.0" style="-fx-background-color: #36393f;">
                     <children>
-                        <Label fx:id="settings_scene_username" prefHeight="48.0" prefWidth="286.0" style="-fx-background-color: #36393f;" textFill="WHITE">
+                        <Label fx:id="mining_scene_username" prefHeight="48.0" prefWidth="286.0" style="-fx-background-color: #36393f;" textFill="WHITE">
                             <font>
                                 <Font size="20.0" />
                             </font>

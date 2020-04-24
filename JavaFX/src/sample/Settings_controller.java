@@ -54,9 +54,10 @@ public class Settings_controller extends Login_controller {
             alert.showAndWait();
             api.register_user();
             api.get_balance();
+            alert.setContentText("Balance synchronized");
+            alert.show();
             first_time = false;
         }
-
         Main.mainstage.setScene(Login_controller.send_scene);
         Main.mainstage.show();
     }
@@ -83,7 +84,7 @@ public class Settings_controller extends Login_controller {
         }
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setContentText("Balance synchronizing\nPlease wait until finished");
-        alert.show();
+        alert.showAndWait();
         Settings_controller.api.get_balance();
         alert.setContentText("Balance synchronized");
         alert.show();
@@ -91,5 +92,28 @@ public class Settings_controller extends Login_controller {
 
     public void reset(ActionEvent actionEvent) {
         reset_to_login_screen();
+    }
+
+    public void load_mining(ActionEvent actionEvent) throws IOException {
+        selected_masternode = combobox_serverlist.getValue();
+        if (selected_masternode == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("Please choose a Masternode to sync from.");
+            alert.show();
+            return;
+        }
+        if (first_time) {
+            api.set_masternode();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setContentText("Balance synchronizing\nPlease wait until finished");
+            alert.showAndWait();
+            api.register_user();
+            api.get_balance();
+            alert.setContentText("Balance synchronized");
+            alert.show();
+            first_time = false;
+        }
+        Main.mainstage.setScene(Login_controller.mining_scene);
+        Main.mainstage.show();
     }
 }

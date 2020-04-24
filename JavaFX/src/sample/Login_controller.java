@@ -14,7 +14,7 @@ public class Login_controller {
 
     public TextField login_screen_username;
     public static String username;
-    public static Scene settings_scene, send_scene;
+    public static Scene settings_scene, send_scene, mining_scene;
 
 
     public void reset_to_login_screen() {
@@ -24,6 +24,8 @@ public class Login_controller {
             settings_scene = new Scene(settings_changer);
             Parent send_changer = FXMLLoader.load(getClass().getResource("kyas_send.fxml"));
             send_scene = new Scene(send_changer);
+            Parent mining_changer = FXMLLoader.load(getClass().getResource("kyas_mining.fxml"));
+            mining_scene = new Scene(mining_changer);
             Parent login_changer = FXMLLoader.load(getClass().getResource("kyas_login.fxml"));
             Scene login_scene = new Scene(login_changer);
             Main.mainstage.setScene(login_scene);
@@ -40,6 +42,8 @@ public class Login_controller {
             settings_scene = new Scene(settings_changer);
             Parent send_changer = FXMLLoader.load(getClass().getResource("kyas_send.fxml"));
             send_scene = new Scene(send_changer);
+            Parent mining_changer = FXMLLoader.load(getClass().getResource("kyas_mining.fxml"));
+            mining_scene = new Scene(mining_changer);
         } catch (IOException e) {
             e.printStackTrace();
         }

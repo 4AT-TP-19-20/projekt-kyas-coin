@@ -55,4 +55,9 @@ public class Send_controller extends Login_controller{
         }
         Settings_controller.api.new_transaction(receiver_address.getText(), Float.parseFloat(amount.getText()));
     }
+
+    public void load_mining(ActionEvent actionEvent) {
+        Main.mainstage.setScene(Login_controller.mining_scene);
+        Main.mainstage.show();
+    }
 }
