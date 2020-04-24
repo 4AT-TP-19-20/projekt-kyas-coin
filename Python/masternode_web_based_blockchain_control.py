@@ -9,7 +9,7 @@ import random
 
 first_time = True
 node = Flask("__name__")
-nächster_beweis = 0
+next_proof = 0
 last_miner = ""
 block_reward = 5000
 already_mined = False
@@ -23,7 +23,7 @@ registered_users = []
 def blocktime():
     while True:
         global first_time
-        global nächster_beweis
+        global next_proof
         global block_reward
         global already_mined
         global registered_users
@@ -31,9 +31,11 @@ def blocktime():
         global total_supply
         global max_ledger_burn_percentage
         global next_halving
+        # Block reward halving
         if block_count == next_halving:
             block_reward = block_reward / 2
             next_halving = next_halving * 2
+        # Generate genesis block at blocktime (2 minutes)
         if first_time:
             if (int(time.time()) % 120) <= 5:
                 global blockchain
@@ -43,16 +45,17 @@ def blocktime():
                     registered_users.append(user)
 
                 first_time = False
-                nächster_beweis = 0
+                next_proof = 0
                 block_count = block_count + 1
                 time.sleep(10)
+        # Generate new block at blocktime (2 minutes)
         elif (int(time.time()) % 120) <= 5:
-            if nächster_beweis == 0:
-                vorheriger_block = blockchain.letzter_block
-                nächster_beweis = blockchain.pow(vorheriger_block=vorheriger_block)
+            if next_proof == 0:
+                previous_block = blockchain.last_block
+                next_proof = blockchain.pow(previous_block=previous_block)
             else:
                 global last_miner
-                blockchain.neue_transaktion(absender="masternode", empfänger=last_miner, betrag=block_reward)
+                blockchain.add_transaction(sender="masternode", recipient=last_miner, amount=block_reward)
                 total_supply = total_supply - block_reward
                 pass
 
@@ -73,15 +76,15 @@ def blocktime():
                 # Get clients current spendable balance
                 unconfirmed_balance_user = 0
                 for block in blockchain.chain:
-                    block_transaktionen = block['transaktionen']
-                    for t in block_transaktionen:
-                        if t['absender'] == unconfirmed_selected_user:
-                            unconfirmed_balance_user = unconfirmed_balance_user - t['betrag']
-                        elif t['empfänger'] == unconfirmed_selected_user:
-                            unconfirmed_balance_user = unconfirmed_balance_user + t['betrag']
-                for m in blockchain.aktuelle_transaktionen:
-                    if m['absender'] == unconfirmed_selected_user:
-                        unconfirmed_balance_user = unconfirmed_balance_user - m['betrag']
+                    block_transactions = block['transactions']
+                    for t in block_transactions:
+                        if t['sender'] == unconfirmed_selected_user:
+                            unconfirmed_balance_user = unconfirmed_balance_user - t['amount']
+                        elif t['recipient'] == unconfirmed_selected_user:
+                            unconfirmed_balance_user = unconfirmed_balance_user + t['amount']
+                for m in blockchain.mempool:
+                    if m['sender'] == unconfirmed_selected_user:
+                        unconfirmed_balance_user = unconfirmed_balance_user - m['amount']
                 # If clients balance is zero get a new random client
                 if unconfirmed_balance_user <= 0:
                     continue
@@ -106,151 +109,165 @@ def blocktime():
                 # Value each client has to burn is calculated
                 client_burn_value = client_burn_percentage * to_be_burned / 100
                 # Currency is burned
-                blockchain.neue_transaktion(absender=selected_users[counter], empfänger="Burner",
-                                            betrag=client_burn_value)
+                blockchain.add_transaction(sender=selected_users[counter], recipient="Burner",
+                                           amount=client_burn_value)
                 counter = counter + 1
 
             # Burned currency is removed from total supply
             total_supply = total_supply - to_be_burned
 
             # New Block
-            aktuell_letzter_block = blockchain.chain[-1]
-            blockchain.neuer_block(nächster_beweis, blockchain.block_hashen(aktuell_letzter_block))
+            current_last_block = blockchain.chain[-1]
+            blockchain.forge_block(next_proof, blockchain.hash_block(current_last_block))
             block_count = block_count + 1
             already_mined = False
-            nächster_beweis = 0
+            next_proof = 0
 
             time.sleep(10)
 
 
 @node.route('/update/chain', methods=['POST'])
 def update_chain():
-    neuer_beweis_json = request.get_json(force=True)
-    global nächster_beweis
-    nächster_beweis = neuer_beweis_json['beweis']
-    aktuell_letzter_block = blockchain.chain[-1]
-    if blockchain.beweise_validieren(aktuell_letzter_block['beweis'], nächster_beweis,
-                                     blockchain.block_hashen(aktuell_letzter_block)) is False:
-        return jsonify("Block nicht valide."), 400
+    # Check if given proof of work is valid and masternodes pow
+    new_proof_json = request.get_json(force=True)
+    global next_proof
+    next_proof = new_proof_json['proof']
+    current_last_block = blockchain.chain[-1]
+    if blockchain.validate_pow(current_last_block['proof'], next_proof,
+                               blockchain.hash_block(current_last_block)) is False:
+        return jsonify("Block not valid."), 400
     else:
         global last_miner
         global already_mined
-        last_miner = neuer_beweis_json['miner']
+        last_miner = new_proof_json['miner']
         already_mined = True
         return jsonify(
-            "Block valide. Block wird zur Blockchain hinzugefügt. Belohnung wird im nächsten Block ausgezahlt"), 200
+            "Block valid. Block will be added to chain."), 200
 
 
+# Start thread to create blocks at blocktime asynchronously
 threading.Thread(target=blocktime).start()
 
 
+# Return full chain
 @node.route('/full/chain', methods=['GET'])
 def full_chain():
     return jsonify(blockchain.chain), 200
 
 
-@node.route('/aktuelle/transaktionen', methods=['GET'])
-def transaktionen():
-    return jsonify(blockchain.aktuelle_transaktionen), 200
+# Return transactions that are currently in mempool
+@node.route('/current/transactions', methods=['GET'])
+def transactions():
+    return jsonify(blockchain.mempool), 200
 
 
 # Only for testing purposes
+# Return current chain
 @node.route('/chain', methods=['GET'])
 def rückgabe_ganze_blockchain():
     try:
-        antwort = {
+        reply = {
             'chain': blockchain.chain,
-            'länge': len(blockchain.chain)
+            'lenght': len(blockchain.chain)
         }
-        return jsonify(antwort), 200
+        return jsonify(reply), 200
     except:
         return jsonify("No genesis block created"), 500
 
 
 # Only for testing purposes
-@node.route('/transaktionen/neu', methods=['POST'])
-def neue_transaktion():
-    transaktion_inputs = request.get_json(force=True)
+# Create a new transaction
+@node.route('/transactions/new', methods=['POST'])
+def add_transaction():
+    input = request.get_json(force=True)
 
-    index_transaktion = blockchain.neue_transaktion(absender=transaktion_inputs['absender'],
-                                                    empfänger=transaktion_inputs['empfänger'],
-                                                    betrag=transaktion_inputs['betrag'])
-    antwort = {'nachricht': f'Transaktion wird zum Block hinzugefügt mit dem index {index_transaktion}'}
-    return jsonify(antwort), 201
+    index_transaktion = blockchain.add_transaction(sender=input['sender'],
+                                                   recipient=input['recipient'],
+                                                   amount=input['amount'])
+    reply = {'message': f'Transaction will be added to block with index {index_transaktion}'}
+    return jsonify(reply), 201
 
 
-@node.route('/update/transaktionen', methods=['POST'])
+@node.route('/update/transactions', methods=['POST'])
 def update_transactions():
-    neue_transaktionen = request.get_json(force=True)
-    blockchain.neue_transaktion(absender=neue_transaktionen['absender'],
-                                empfänger=neue_transaktionen['empfänger'],
-                                betrag=neue_transaktionen['betrag'])
+    # Get new transaction from node and add it to mempool
+    # Return confirmation status code 200
+    add_transactions = request.get_json(force=True)
+    blockchain.add_transaction(sender=add_transactions['sender'],
+                               recipient=add_transactions['recipient'],
+                               amount=add_transactions['amount'])
     return jsonify(), 200
 
 
+# Return mining status (Has the next pow already been mined?)
 @node.route('/mining/status', methods=['GET'])
 def mining_status():
     global already_mined
     return jsonify(already_mined), 200
 
 
+# Return a specific users transaction history
 @node.route('/client/transactions', methods=['POST'])
 def client_transactions():
-    nachricht = request.get_json(force=True)
-    client_name = nachricht['name']
-    rückgabe_transaktionen = []
+    message = request.get_json(force=True)
+    client_name = message['name']
+    returned_transactions = []
     for block in blockchain.chain:
-        block_transaktionen = block['transaktionen']
-        for t in block_transaktionen:
-            if t['absender'] == client_name:
-                rückgabe_transaktionen.append(t)
-            elif t['empfänger'] == client_name:
-                rückgabe_transaktionen.append(t)
-    for m in blockchain.aktuelle_transaktionen:
-        if m['absender'] == client_name:
-            rückgabe_transaktionen.append(m)
-    finale_antwort = {
-        "transactions": rückgabe_transaktionen
+        block_transactions = block['transactions']
+        for t in block_transactions:
+            if t['sender'] == client_name:
+                returned_transactions.append(t)
+            elif t['recipient'] == client_name:
+                returned_transactions.append(t)
+    for m in blockchain.mempool:
+        if m['sender'] == client_name:
+            returned_transactions.append(m)
+    finale_reply = {
+        "transactions": returned_transactions
     }
-    return jsonify(finale_antwort), 200
+    return jsonify(finale_reply), 200
 
 
+# Return a specific users balance
 @node.route('/client/balance', methods=['POST'])
 def client_balance():
-    nachricht = request.get_json(force=True)
-    client_name = nachricht['name']
+    message = request.get_json(force=True)
+    client_name = message['name']
     balance = 0
     for block in blockchain.chain:
-        block_transaktionen = block['transaktionen']
-        for t in block_transaktionen:
-            if t['absender'] == client_name:
-                balance = balance - t['betrag']
-            elif t['empfänger'] == client_name:
-                balance = balance + t['betrag']
-    for m in blockchain.aktuelle_transaktionen:
-        if m['absender'] == client_name:
-            balance = balance - m['betrag']
+        block_transactions = block['transactions']
+        for t in block_transactions:
+            if t['sender'] == client_name:
+                balance = balance - t['amount']
+            elif t['recipient'] == client_name:
+                balance = balance + t['amount']
+    for m in blockchain.mempool:
+        if m['sender'] == client_name:
+            balance = balance - m['amount']
     new_balance = {
         "balance": balance
     }
     return jsonify(new_balance), 200
 
 
+# Register a new user and give him a signup bonus
 @node.route('/register', methods=['POST'])
 def register():
-    nachricht = request.get_json(force=True)
+    message = request.get_json(force=True)
     global registered_users
     global total_supply
     for user in registered_users:
-        if user == nachricht['name']:
-            return jsonify("User schon registriert"), 200
-    registered_users.append(nachricht['name'])
+        if user == message['name']:
+            return jsonify("User already registered"), 200
+    registered_users.append(message['name'])
     signup_bonus = 0.0001 * total_supply / 100
     total_supply = total_supply - signup_bonus
-    blockchain.neue_transaktion(absender="SignupBonus", empfänger=nachricht['name'], betrag=signup_bonus)
-    return jsonify("User registriert"), 200
+    blockchain.add_transaction(sender="SignupBonus", recipient=message['name'], amount=signup_bonus)
+    return jsonify("User registered"), 200
 
 
+# Only for testing purposes
+# Return all currently registered users
 @node.route('/register/print', methods=['GET'])
 def r():
     global registered_users
