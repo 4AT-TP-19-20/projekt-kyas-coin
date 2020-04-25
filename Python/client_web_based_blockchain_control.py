@@ -36,7 +36,7 @@ def minen():
             else:
                 return jsonify("Error"), 500
         else:
-            return jsonify("POW has already been calculated"), 500
+            return jsonify("POW has already been calculated"), 403
 
 
 # Return entire chain
@@ -67,7 +67,7 @@ def new_transaction():
         balance = reply_payload['balance']
         # If balance is not sufficient stop transaction
         if balance < float(amount):
-            return jsonify("Balance not sufficient"), 500
+            return jsonify("Balance not sufficient"), 403
     t = {
         'sender': name,
         'recipient': recipient,
