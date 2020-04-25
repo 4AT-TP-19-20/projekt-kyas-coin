@@ -6,16 +6,19 @@ import com.google.gson.annotations.SerializedName;
 //Base Transaction class
 public class Transaction {
 
-    @SerializedName("betrag")
+    @SerializedName("amount")
     @Expose
     private double amount;
 
-    @SerializedName("empfänger")
+    @SerializedName("recipient")
     @Expose
     private String recipient;
 
-    @SerializedName("absender")
+    @SerializedName("sender")
     private String sender;
+
+    @SerializedName("index_block")
+    private int block;
 
     public Transaction(double amount, String recipient, String sender) {
         this.amount = amount;
@@ -23,7 +26,20 @@ public class Transaction {
         this.sender = sender;
     }
 
+    public Transaction(double amount, String recipient, String sender, int block) {
+        this.amount = amount;
+        this.recipient = recipient;
+        this.sender = sender;
+        this.block = block;
+    }
 
+    public int getBlock() {
+        return block;
+    }
+
+    public void setBlock(int block) {
+        this.block = block;
+    }
 
     public double getAmount() {
         return amount;

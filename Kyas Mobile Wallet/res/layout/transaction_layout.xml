@@ -38,6 +38,13 @@
         android:text="@string/recipient"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <TextView
+        android:id="@+id/block_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/block"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
 
 
     <Space

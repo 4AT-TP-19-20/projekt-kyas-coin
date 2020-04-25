@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -72,7 +73,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 transactionViewModel.getBalance();
-                balanceTv.setText(Arrays.toString(balance).replace("[", "").replace("]", "") + " K");
+                DecimalFormat df2 = new DecimalFormat("0.00");
+                String balString = df2.format(balance[0]).toString();
+                balanceTv.setText(balString + " K");
                 transactionViewModel.getAllTransactions();
             }
         });
@@ -88,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        
+
         transactionViewModel.getAllTransactions().observe(this, new Observer<List<Transaction>>() {
             @Override
             public void onChanged(List<Transaction> expenses) {

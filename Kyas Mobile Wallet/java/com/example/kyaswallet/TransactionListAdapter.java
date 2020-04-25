@@ -31,12 +31,14 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
     //add UI elements to UI view holder
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
         Transaction currentTransaction = transactions.get(position);
+        DecimalFormat df2 = new DecimalFormat("0.00");
         if (currentTransaction.getSender().equals(Address.getAddress())){
-            holder.amountTv.setText(String.valueOf(-currentTransaction.getAmount()));
+            holder.amountTv.setText(df2.format(-currentTransaction.getAmount()) + " K");
         }else{
-            holder.amountTv.setText(String.valueOf(currentTransaction.getAmount()));
+            holder.amountTv.setText(df2.format(+currentTransaction.getAmount()) + " K");
         }
 
+        holder.blockTv.setText("Block: " + currentTransaction.getBlock());
         holder.recipientTv.setText("Recipient: " + currentTransaction.getRecipient());
         holder.senderTv.setText("Sender: " + currentTransaction.getSender());
 
@@ -70,10 +72,12 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         private final TextView amountTv;
         private final TextView recipientTv;
         private final TextView senderTv;
+        private final TextView blockTv;
 
 
         private TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
+            blockTv = itemView.findViewById(R.id.block_textview);
             amountTv = itemView.findViewById(R.id.amount_textView);
             recipientTv = itemView.findViewById(R.id.recipient_textview);
             senderTv = itemView.findViewById(R.id.sender_textView);
