@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+//Send transaction screem
 public class NewTransactionActivity extends AppCompatActivity {
 
     private EditText amountEt;
@@ -25,9 +26,11 @@ public class NewTransactionActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_add_transaction);
 
+        //Initialise Textboxes
         amountEt = findViewById(R.id.amountTf);
         recipientEt = findViewById(R.id.recipientTf);
 
+        //Initialise save button
         ImageView saveBtn = findViewById(R.id.save_button);
         saveBtn.setImageDrawable(getDrawable(R.drawable.ic_check_white_24dp));
         saveBtn.setOnClickListener(new View.OnClickListener() {
@@ -37,15 +40,12 @@ public class NewTransactionActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(amountEt.getText())) {
                     setResult(RESULT_CANCELED);
                 }
-                // Add data to db directly over ViewModel
+                // Create and add new Transaction to viewmodel
                 else {
                     double amount = Double.parseDouble(amountEt.getText().toString());
                     String recipient = recipientEt.getText().toString();
-
-
                     Transaction newTransaction = new Transaction(amount, recipient, Address.getAddress());
                     transactionViewModel.create(newTransaction);
-
                     setResult(RESULT_OK);
                 }
                 finish();

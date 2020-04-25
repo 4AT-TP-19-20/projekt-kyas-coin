@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.lang.annotation.AnnotationFormatError;
 
+// Settings screen
 public class SettingsActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -22,9 +23,10 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        //Initialise View
         TextView currentAddrTv = findViewById(R.id.currentAddressTv);
         final EditText newAddrEt = findViewById(R.id.newAddressEt);
-        if (!Address.getAddress().equals("_/_"))
+        if (!Address.getAddress().equals("NO_ADDR"))
             currentAddrTv.setText(Address.getAddress());
 
         ImageView saveBtn = findViewById(R.id.save_settings_button);
@@ -36,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(newAddrEt.getText())) {
                     setResult(RESULT_CANCELED);
                 }
-                // Add data to db directly over ViewModel
+                // Set new address to static Address class
                 else {
                     Address.setAddress(newAddrEt.getText().toString());
                     setResult(RESULT_OK);

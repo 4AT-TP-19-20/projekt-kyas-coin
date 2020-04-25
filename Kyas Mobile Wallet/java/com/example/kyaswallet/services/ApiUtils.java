@@ -51,9 +51,9 @@ public class ApiUtils {
     public LiveData<Integer> postTransaction(double amount, String recipient, String sender){
 
         String body = "{" +
-                "\"absender\":" + "\"" + sender + "\"" +
-                ",\"empfänger\":" + "\"" + recipient + "\"" +
-                ",\"betrag\":" +  amount +
+                "\"sender\":" + "\"" + sender + "\"" +
+                ",\"recipient\":" + "\"" + recipient + "\"" +
+                ",\"amount\":" +  amount +
                 "}";
 
         RequestBody requestBody = RequestBody.create(MediaType.parse(body), body);

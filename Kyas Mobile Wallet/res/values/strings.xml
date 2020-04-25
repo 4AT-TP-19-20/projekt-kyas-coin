@@ -10,4 +10,5 @@
     <string name="settings">settings</string>
     <string name="New_Address">New address</string>
     <string name="refresh">Refresh</string>
+    <string name="splash_logo">Splash logo</string>
 </resources>

@@ -2,7 +2,7 @@ package com.example.kyaswallet;
 
 public class Address {
 
-    private static String address = "_/_";
+    private static String address = "NO_ADDR";
 
     private static double balance = 0;
 

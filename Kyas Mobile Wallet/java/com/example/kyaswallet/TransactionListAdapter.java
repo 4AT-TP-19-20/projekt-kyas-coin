@@ -59,14 +59,14 @@ public class TransactionListAdapter extends RecyclerView.Adapter<TransactionList
         } else return 0;
     }
 
-    // set expenses to provided List from back
+    // set transactions to provided List from back
     void setItems(List<Transaction> transactionList) {
         transactions = transactionList;
         notifyDataSetChanged();
     }
 
     //Holder subclass
-    class TransactionViewHolder extends RecyclerView.ViewHolder {
+    static class TransactionViewHolder extends RecyclerView.ViewHolder {
         private final TextView amountTv;
         private final TextView recipientTv;
         private final TextView senderTv;

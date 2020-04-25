@@ -19,6 +19,7 @@ import android.widget.TextView;
 import java.util.Arrays;
 import java.util.List;
 
+//Main screen
 public class MainActivity extends AppCompatActivity {
 
     private static final int NEW_TX_REQUEST_CODE = 1;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //Init ViewModel
         final TransactionViewModel transactionViewModel = ViewModelProviders.of(this)
                 .get(TransactionViewModel.class);
 
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+        //Data Observers
         LiveData<Double> liveBalance = transactionViewModel.getBalance();
         liveBalance.observeForever(new Observer<Double>() {
             @Override
@@ -87,9 +88,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
+        
         transactionViewModel.getAllTransactions().observe(this, new Observer<List<Transaction>>() {
             @Override
             public void onChanged(List<Transaction> expenses) {

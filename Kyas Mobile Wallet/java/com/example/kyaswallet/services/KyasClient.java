@@ -7,6 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class KyasClient {
     private static Retrofit KyasRetrofit = null;
 
+    //Retrofit Client
     public static Retrofit getKyasRetrofit(String baseURL) {
         if (KyasRetrofit == null) {
             KyasRetrofit = new Retrofit.Builder()

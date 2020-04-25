@@ -6,13 +6,14 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+//Response class for "get transactions" API call
 public class TransactionsResponse {
 
     @SerializedName("transactions")
     @Expose
     private List<Transaction> transactionsList;
 
-    public List<Transaction> getTransactionsList() {
+    List<Transaction> getTransactionsList() {
         return transactionsList;
     }
 

@@ -13,7 +13,7 @@ import com.example.kyaswallet.services.ApiUtils;
 
 import java.util.List;
 
-
+//Frontends inner workings
 public class TransactionViewModel extends AndroidViewModel {
 
     private final MutableLiveData<List<Transaction>> allExpenses = new MutableLiveData<>();
@@ -37,7 +37,6 @@ public class TransactionViewModel extends AndroidViewModel {
     }
 
 
-
     LiveData<Double> getBalance(){
         ApiUtils utils = new ApiUtils();
         utils.registerAddress();
@@ -52,8 +51,6 @@ public class TransactionViewModel extends AndroidViewModel {
     }
 
 
-
-
     public void create(final Transaction transaction){
         ApiUtils utils = new ApiUtils();
         LiveData<Integer> createCode = utils.postTransaction(transaction.getAmount(), transaction.getRecipient(), transaction.getSender());
@@ -61,13 +58,11 @@ public class TransactionViewModel extends AndroidViewModel {
             @Override
             public void onChanged(Integer integer) {
                 if (integer != 201)
-                    throw new RuntimeException("no internet connection!");
+                    throw new RuntimeException("No internet connection!");
 
             }
         });
 
-
     }
-
 
 }

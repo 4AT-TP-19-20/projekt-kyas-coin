@@ -3,6 +3,7 @@ package com.example.kyaswallet;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+//Base Transaction class
 public class Transaction {
 
     @SerializedName("betrag")
