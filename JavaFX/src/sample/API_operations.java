@@ -166,7 +166,7 @@ public class API_operations {
             var writer = new DataOutputStream(connection.getOutputStream());
             writer.write(postData);
             StringBuilder content;
-            if (connection.getResponseCode() == 500) {
+            if (connection.getResponseCode() == 403) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("Balance not sufficient. Updating balance.");
                 alert.show();
@@ -214,9 +214,9 @@ public class API_operations {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setContentText("Block has been successfully mined.\nReward will be added to the next block.");
                 alert.show();
-            } else if (connection.getResponseCode() == 500){
+            } else if (connection.getResponseCode() == 403){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("POW has already been calculated by someone else!\nPlease wait until next block.");
+                alert.setContentText("PoW has already been calculated by someone else!\nPlease wait until next block.");
                 alert.show();
             }
             connection.disconnect();
