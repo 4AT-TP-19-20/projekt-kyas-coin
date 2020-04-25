@@ -222,12 +222,12 @@ public class API_operations {
             connection.disconnect();
         } catch (MalformedURLException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("No response from local node mu\nQuitting...");
+            alert.setContentText("No response from local node\nQuitting...");
             alert.showAndWait();
             System.exit(1);
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("No response from local node io\nQuitting...");
+            alert.setContentText("No response from local node\nQuitting...");
             alert.showAndWait();
             System.exit(1);
         }
