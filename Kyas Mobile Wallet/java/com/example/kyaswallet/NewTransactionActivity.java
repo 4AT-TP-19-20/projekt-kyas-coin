@@ -37,7 +37,7 @@ public class NewTransactionActivity extends AppCompatActivity {
             public void onClick(View v) {
                 TransactionViewModel transactionViewModel = ViewModelProviders.of(NewTransactionActivity.this).get(TransactionViewModel.class);
                 // Empty amount, set "CANCEL" reply
-                if (TextUtils.isEmpty(amountEt.getText())) {
+                if (TextUtils.isEmpty(amountEt.getText()) || Double.parseDouble(String.valueOf(amountEt.getText())) > Address.getBalance()) {
                     setResult(RESULT_CANCELED);
                 }
                 // Create and add new Transaction to viewmodel

@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
         final TransactionListAdapter adapter = new TransactionListAdapter(this);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager l = new LinearLayoutManager(this);
+        l.setReverseLayout(true);
+        l.setStackFromEnd(true);
         recyclerView.setLayoutManager(l);
 
         //Toolbar Button setup
