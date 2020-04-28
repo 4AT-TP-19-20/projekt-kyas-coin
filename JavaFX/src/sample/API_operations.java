@@ -211,10 +211,10 @@ public class API_operations {
             connection.setConnectTimeout(120000);
             connection.setReadTimeout(120000);
             if (connection.getResponseCode() == 200) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText("Block has been successfully mined.\nReward will be added to the next block.");
                 alert.show();
-            } else if (connection.getResponseCode() == 403){
+            } else if (connection.getResponseCode() == 403) {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setContentText("PoW has already been calculated by someone else!\nPlease wait until next block.");
                 alert.show();
