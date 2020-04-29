@@ -159,4 +159,5 @@ def set_masternode():
     masternode = urlparse(message['masternode']).netloc
     if first_time:
         init_sync(False)
+        first_time = False
     return jsonify("Masternode set to: " + masternode), 200
