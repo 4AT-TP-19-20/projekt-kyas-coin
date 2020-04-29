@@ -9,6 +9,7 @@ node = Flask(__name__)
 blockchain = bc.Blockchain()
 masternode = ""
 name = ""
+first_time = True
 
 
 @node.route('/mine', methods=['GET'])
@@ -27,7 +28,7 @@ def minen():
             global name
             # Send pow to masternode for confirmation
             masternode_response = requests.post(f'http://{masternode}/update/chain',
-                                               json={"proof": next_proof, "miner": name})
+                                                json={"proof": next_proof, "miner": name})
             if masternode_response.status_code == 200:
                 reply = {
                     'message': "New block will be forged at blocktime",
@@ -75,12 +76,12 @@ def new_transaction():
     }
     # If balance is sufficient send transaction to mempool
     masternode_reply = requests.post(f'http://{masternode}/update/transactions',
-                                                     json=t)
+                                     json=t)
     # If masternode http reply status code is 200 add transaction to own mempool
     if (masternode_reply.status_code) == 200:
         index_transaction = blockchain.add_transaction(sender=name,
-                                                        recipient=request_input['recipient'],
-                                                        amount=request_input['amount'])
+                                                       recipient=request_input['recipient'],
+                                                       amount=request_input['amount'])
         reply = {'message': f'Transaction will be added to block with index {index_transaction}'}
         return jsonify(reply), 201
     else:
@@ -90,7 +91,7 @@ def new_transaction():
 @node.route('/get/full/update', methods=['GET'])
 def init_sync(only_transactions=False):
     # If get only transactions is false get update of chain and transactions
-    if (only_transactions) is False:
+    if only_transactions is False:
         resp = requests.get(f'http://{masternode}/full/chain')
         if resp.status_code == 200:
             new_chain = resp.json()
@@ -154,6 +155,9 @@ def set_masternode():
     # Set masternodes address, future proofing for when there will be more than 1 masternode
     message = request.get_json(force=True)
     global masternode
+    global first_time
     masternode = urlparse(message['masternode']).netloc
+    if first_time:
+        init_sync(False)
+        first_time = False
     return jsonify("Masternode set to: " + masternode), 200
-
