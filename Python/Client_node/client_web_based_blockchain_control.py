@@ -1,9 +1,7 @@
-from Python import client_blockchain as bc
+from Python.Client_node import client_blockchain as bc
 from flask import Flask, jsonify, request
-from uuid import uuid4
 from urllib.parse import urlparse
 import requests
-import threading
 
 node = Flask(__name__)
 blockchain = bc.Blockchain()

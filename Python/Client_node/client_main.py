@@ -1,8 +1,8 @@
-from Python import client_web_based_blockchain_control
+from Python.Client_node import client_web_based_blockchain_control
 
 if __name__ == "__main__":
     # Print kyas logo into console
-    file = open("logo.txt", "r")
+    file = open("../Design/logo.txt", "r")
     logo = file.read()
     print(logo)
     # Start flask server
