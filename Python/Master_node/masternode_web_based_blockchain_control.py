@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 # import blockchain as bc
 import threading
 import time
-from Python import masternode_blockchain as bc
+from Python.Master_node import masternode_blockchain as bc
 import math
 import random
 

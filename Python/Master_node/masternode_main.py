@@ -1,5 +1,5 @@
 # import flask_test
-from Python import masternode_web_based_blockchain_control
+from Python.Master_node import masternode_web_based_blockchain_control
 
 if __name__ == "__main__":
     # Start flask server
