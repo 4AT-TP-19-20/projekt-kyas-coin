@@ -3,10 +3,15 @@ from flask import Flask, jsonify, request
 # import blockchain as bc
 import threading
 import time
+import requests
 from Python.Master_node import masternode_blockchain as bc
 import math
 import random
 
+# Set own static IP address
+master_node_pool = []
+local_node = "192.168.1.150:2169"
+lookup_server_pool = ["192.168.1.200:6921", "192.168.1.201:6921", "192.168.1.202:6921", "192.168.1.203:6921"]
 first_time = True
 node = Flask("__name__")
 next_proof = 0
@@ -28,6 +33,7 @@ def blocktime():
         global already_mined
         global registered_users
         global block_count
+        global blockchain
         global total_supply
         global max_ledger_burn_percentage
         global next_halving
@@ -38,7 +44,6 @@ def blocktime():
         # Generate genesis block at blocktime (2 minutes)
         if first_time:
             if (int(time.time()) % 120) <= 5:
-                global blockchain
                 blockchain = bc.Blockchain()
                 total_supply = total_supply - blockchain.genesis_distributed_money
                 for user in blockchain.genesis_initial_users:
@@ -126,6 +131,56 @@ def blocktime():
             time.sleep(10)
 
 
+def startup_sequence():
+    global master_node_pool
+    global first_time
+    global blockchain
+    global local_node
+    chosen_lookup_server = random.choice(lookup_server_pool)
+    response = requests.get(f'http://{chosen_lookup_server}/get/masternodes')
+    for m in response.json()['masternodes']:
+        master_node_pool.append(m)
+    # If there are no master nodes currently online, create a new block chain with new genesis block
+    print(master_node_pool)
+    print(len(master_node_pool))
+    if len(master_node_pool) == 0:
+        # Start thread to create blocks at block time asynchronously
+        threading.Thread(target=blocktime).start()
+        master_node_pool.append(local_node)
+    else:
+        first_time = False
+        print(master_node_pool)
+        sync_from = random.choice(master_node_pool)
+
+        blockchain = bc.Blockchain()
+        response = requests.get(f'http://{sync_from}/full/chain')
+        blockchain.chain = response.json()
+        response = requests.get(f'http://{sync_from}/current/transactions')
+        blockchain.mempool = response.json()
+        master_node_pool.append(local_node)
+        threading.Thread(target=blocktime).start()
+    message = {
+        'masternode': local_node
+    }
+    requests.post(f'http://{chosen_lookup_server}/new/masternode', json=message)
+
+
+def shutdown_sequence():
+    pass
+
+
+@node.route('/new/masternode', methods=['POST'])
+def new_masternode():
+    message = request.get_json(force=True)
+    master_node_pool.append(message['masternode'])
+    return jsonify(), 200
+
+
+@node.route('/active/masternodes', methods=['GET'])
+def active_masternodes():
+    return jsonify(master_node_pool), 200
+
+
 @node.route('/update/chain', methods=['POST'])
 def update_chain():
     # Check if given proof of work is valid and masternodes pow
@@ -143,10 +198,6 @@ def update_chain():
         already_mined = True
         return jsonify(
             "Block valid. Block will be added to chain."), 200
-
-
-# Start thread to create blocks at blocktime asynchronously
-threading.Thread(target=blocktime).start()
 
 
 # Return full chain
@@ -272,3 +323,11 @@ def register():
 def r():
     global registered_users
     return jsonify(registered_users), 200
+
+
+@node.route('/update/masternodes', methods=['POST'])
+def update_masternodes():
+    pass
+
+
+startup_sequence()

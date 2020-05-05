@@ -32,6 +32,8 @@ def new_masternode():
     for m in registered_masternodes:
         if m == message['masternode']:
             return jsonify(), 400
+    for m in registered_masternodes:
+        requests.post(f'http://{m}/new/masternode', json=message)
     registered_masternodes.append(message['masternode'])
     for s in server_pool:
         requests.post(f'http://{s}/lookup/sync/new/masternode', json=message)
