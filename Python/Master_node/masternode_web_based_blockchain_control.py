@@ -137,6 +137,7 @@ def startup_sequence():
     global master_node_pool
     global first_time
     global blockchain
+    global registered_users
     global local_node
     chosen_lookup_server = random.choice(lookup_server_pool)
     response = requests.get(f'http://{chosen_lookup_server}/get/masternodes')
@@ -157,6 +158,8 @@ def startup_sequence():
         response = requests.get(f'http://{sync_from}/current/transactions')
         blockchain.mempool = response.json()
         master_node_pool.append(local_node)
+        response = requests.get(f'http://{sync_from}/register/print')
+        registered_users = response.json()
         threading.Thread(target=blocktime).start()
     message = {
         'masternode': local_node
@@ -323,17 +326,29 @@ def register():
         if user == message['name']:
             return jsonify("User already registered"), 200
     registered_users.append(message['name'])
+    for s in master_node_pool:
+        requests.post(f'http://{s}/add/user', json=message)
     signup_bonus = 0.0001 * total_supply / 100
     total_supply = total_supply - signup_bonus
     blockchain.add_transaction(sender="SignupBonus", recipient=message['name'], amount=signup_bonus)
     return jsonify("User registered"), 200
 
 
+@node.route('/add/user', methods=['POST'])
+def add_user():
+    message = request.get_json(force=True)
+    global registered_users
+    for user in registered_users:
+        if user == message['name']:
+            return jsonify(), 200
+    registered_users.append(message['name'])
+    return jsonify(), 200
+
+
 # Only for testing purposes
 # Return all currently registered users
 @node.route('/register/print', methods=['GET'])
 def r():
-    global registered_users
     return jsonify(registered_users), 200
 
 
@@ -342,8 +357,6 @@ def update_masternodes():
     pass
 
 
-print("Press CTRL + C once to stop master node\n")
+print("Press CTRL + C to stop master node\n")
 startup_sequence()
 signal.signal(signal.SIGINT, shutdown_sequence)
-
-# TODO: sync registered users
