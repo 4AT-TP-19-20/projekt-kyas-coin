@@ -251,7 +251,21 @@ def add_transaction():
                                                    recipient=input['recipient'],
                                                    amount=input['amount'])
     reply = {'message': f'Transaction will be added to block with index {index_transaktion}'}
+    temp_send_list = master_node_pool.copy()
+    temp_send_list.remove(local_node)
+    for t in temp_send_list:
+        requests.post(f'http://{t}/transactions/new/masternodes', json=input)
     return jsonify(reply), 201
+
+
+@node.route('/transactions/new/masternodes', methods=['POST'])
+def new_transaction_masternode():
+    input = request.get_json(force=True)
+
+    blockchain.add_transaction(sender=input['sender'],
+                               recipient=input['recipient'],
+                               amount=input['amount'])
+    return jsonify(), 200
 
 
 @node.route('/update/transactions', methods=['POST'])

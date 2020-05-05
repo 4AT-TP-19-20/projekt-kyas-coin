@@ -96,5 +96,4 @@ def lookup_sync_update_trustfactor():
             registered_masternodes[index] = message['new_masternode']
     return jsonify(), 200
 
-# TODO: exception handling
-# TODO: send updates to master nodes
+
