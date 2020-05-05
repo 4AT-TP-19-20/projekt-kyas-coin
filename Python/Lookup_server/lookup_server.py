@@ -28,8 +28,10 @@ def get_masternodes():
 
 @server.route("/new/masternode", methods=['POST'])
 def new_masternode():
-    # TODO: Check if master node already exists
     message = request.get_json(force=True)
+    for m in registered_masternodes:
+        if m == message['masternode']:
+            return jsonify(), 400
     registered_masternodes.append(message['masternode'])
     for s in server_pool:
         requests.post(f'http://{s}/lookup/sync/new/masternode', json=message)
@@ -43,9 +45,9 @@ def update_trustfactor():
     #   'new_masternode': "ip:port, new_trust_factor"
     # }
     message = request.get_json(force=True)
-    for m in registered_masternodes:
+    for index, m in enumerate(registered_masternodes):
         if m == message['old_masternode']:
-            m = message['new_masternode']
+            registered_masternodes[index] = message['new_masternode']
     for s in server_pool:
         requests.post(f'http://{s}/lookup/sync/update/trustfactor', json=message)
     return jsonify(), 200
@@ -54,9 +56,10 @@ def update_trustfactor():
 # Called when master node goes offline or is banned
 @server.route("/remove/masternode", methods=['POST'])
 def remove_masternode():
-    # TODO: Send update to other lookup servers
     message = request.get_json(force=True)
-    registered_masternodes.remove(message['masternode'])
+    for m in registered_masternodes:
+        if m == message['masternode']:
+            registered_masternodes.remove(m)
     for s in server_pool:
         requests.post(f'http://{s}/lookup/sync/remove/masternode', json=message)
     return jsonify(), 200
@@ -64,8 +67,10 @@ def remove_masternode():
 
 @server.route("/lookup/sync/new/masternode", methods=['POST'])
 def lookup_sync_new_masternode():
-    # TODO: Check if master node already exists
     message = request.get_json(force=True)
+    for m in registered_masternodes:
+        if m == message['masternode']:
+            return jsonify(), 400
     registered_masternodes.append(message['masternode'])
     return jsonify(), 200
 
@@ -73,14 +78,19 @@ def lookup_sync_new_masternode():
 @server.route("/lookup/sync/remove/masternode", methods=['POST'])
 def lookup_sync_remove_masternode():
     message = request.get_json(force=True)
-    registered_masternodes.remove(message['masternode'])
+    for m in registered_masternodes:
+        if m == message['masternode']:
+            registered_masternodes.remove(m)
     return jsonify(), 200
 
 
 @server.route("/lookup/sync/update/trustfactor", methods=['POST'])
 def lookup_sync_update_trustfactor():
     message = request.get_json(force=True)
-    for m in registered_masternodes:
+    for index, m in enumerate(registered_masternodes):
         if m == message['old_masternode']:
-            m = message['new_masternode']
+            registered_masternodes[index] = message['new_masternode']
     return jsonify(), 200
+
+# TODO: exception handling
+# TODO: send updates to master nodes
