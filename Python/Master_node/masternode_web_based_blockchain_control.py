@@ -7,6 +7,8 @@ import requests
 from Python.Master_node import masternode_blockchain as bc
 import math
 import random
+import os
+import signal
 
 # Set own static IP address
 master_node_pool = []
@@ -141,15 +143,12 @@ def startup_sequence():
     for m in response.json()['masternodes']:
         master_node_pool.append(m)
     # If there are no master nodes currently online, create a new block chain with new genesis block
-    print(master_node_pool)
-    print(len(master_node_pool))
     if len(master_node_pool) == 0:
         # Start thread to create blocks at block time asynchronously
         threading.Thread(target=blocktime).start()
         master_node_pool.append(local_node)
     else:
         first_time = False
-        print(master_node_pool)
         sync_from = random.choice(master_node_pool)
 
         blockchain = bc.Blockchain()
@@ -165,14 +164,27 @@ def startup_sequence():
     requests.post(f'http://{chosen_lookup_server}/new/masternode', json=message)
 
 
-def shutdown_sequence():
-    pass
+def shutdown_sequence(signal, frame):
+    while True:
+        chosen_lookup_server = random.choice(lookup_server_pool)
+        message = {
+            'masternode': local_node
+        }
+        requests.post(f'http://{chosen_lookup_server}/remove/masternode', json=message)
+        os._exit(os.EX_OK)
 
 
 @node.route('/new/masternode', methods=['POST'])
 def new_masternode():
     message = request.get_json(force=True)
     master_node_pool.append(message['masternode'])
+    return jsonify(), 200
+
+
+@node.route('/remove/masternode', methods=['POST'])
+def remove_masternode():
+    message = request.get_json(force=True)
+    master_node_pool.remove(message['masternode'])
     return jsonify(), 200
 
 
@@ -330,4 +342,8 @@ def update_masternodes():
     pass
 
 
+print("Press CTRL + C once to stop master node\n")
 startup_sequence()
+signal.signal(signal.SIGINT, shutdown_sequence)
+
+# TODO: sync registered users

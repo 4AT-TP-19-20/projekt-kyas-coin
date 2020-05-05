@@ -55,13 +55,15 @@ def update_trustfactor():
     return jsonify(), 200
 
 
-# Called when master node goes offline or is banned
+# Called when master node goes offline
 @server.route("/remove/masternode", methods=['POST'])
 def remove_masternode():
     message = request.get_json(force=True)
     for m in registered_masternodes:
         if m == message['masternode']:
             registered_masternodes.remove(m)
+    for m in registered_masternodes:
+        requests.post(f'http://{m}/remove/masternode', json=message)
     for s in server_pool:
         requests.post(f'http://{s}/lookup/sync/remove/masternode', json=message)
     return jsonify(), 200
