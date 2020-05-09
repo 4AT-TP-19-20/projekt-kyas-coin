@@ -23,7 +23,7 @@ public class API_operations {
     public ArrayList<String> masternode_urls = new ArrayList<>();
     public static ObservableList<String> balance = FXCollections.observableArrayList();
 
-    API_operations() {
+    public API_operations() {
         masternodes.add("vmi332355.contaboserver.net");
         masternode_urls.add("http://173.212.211.222:2169");
     }
