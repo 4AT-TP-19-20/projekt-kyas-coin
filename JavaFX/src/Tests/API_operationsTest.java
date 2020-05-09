@@ -1,39 +1,77 @@
 package Tests;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+
+import org.junit.jupiter.api.*;
 import sample.API_operations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 class API_operationsTest {
+    private API_operations tester = new API_operations();
 
     @BeforeAll
-    private static void start() {
+    public static void start() {
         System.out.println("Starting tests");
     }
 
     @Test
-    private void test_new_transaction() {
-        API_operations o = new API_operations();
-        assertThrows(NullPointerException.class, () -> o.new_transaction(null, 0));
-        assertThrows(NullPointerException.class, () -> o.new_transaction(null, 1));
-        assertThrows(NullPointerException.class, () -> o.new_transaction("", 1));
-        assertThrows(NullPointerException.class, () -> o.new_transaction("Test", 1));
-        assertThrows(NullPointerException.class, () -> o.new_transaction("Test", -1));
-        assertThrows(NullPointerException.class, () -> o.new_transaction("Test", Float.POSITIVE_INFINITY));
-        assertThrows(NullPointerException.class, () -> o.new_transaction("Test", Float.NEGATIVE_INFINITY));
+    // Parameter test
+    public void new_transaction_parameterTest() {
+        // Check for null parameter
+        System.out.println("null, 1");
+        assertThrows(ExceptionInInitializerError.class, () -> tester.new_transaction(null, 1));
+        // Check for empty parameter
+        System.out.println("\"\", 1");
+        assertThrows(NoClassDefFoundError.class, () -> tester.new_transaction("", 1));
+        // Check for negative parameter
+        System.out.println("\"String\", -1");
+        assertThrows(NoClassDefFoundError.class, () -> tester.new_transaction("String", -1));
+        // Check for infinity
+        System.out.println("\"String\", Infinity");
+        assertThrows(NoClassDefFoundError.class, () -> tester.new_transaction("String", Float.POSITIVE_INFINITY));
+        // Check for negative infinity
+        System.out.println("\"String\", -Infinity");
+        assertThrows(NoClassDefFoundError.class, () -> tester.new_transaction("String", Float.NEGATIVE_INFINITY));
     }
 
-    @AfterEach
-    private void afterEach() {
-        System.out.println("New Test:");
+    @RepeatedTest(1000)
+    // Performance test
+    public void register_user_performanceTest() {
+        tester.register_user();
     }
+
+    @RepeatedTest(1000)
+    // Performance test
+    public void get_balance_performanceTest() throws IOException {
+        tester.get_balance();
+    }
+
+    @RepeatedTest(1000)
+    // Performance test
+    public void set_masternode_performanceTest() {
+        tester.set_masternode();
+    }
+
+    @RepeatedTest(1000)
+    // Performance test
+    public void new_transaction_performanceTest() {
+        tester.new_transaction("", 0);
+    }
+
+    @RepeatedTest(1000)
+    // Performance test
+    public void mining_performanceTest() {
+        tester.mining();
+    }
+
+
+
 
     @AfterAll
-    private static void end() {
+    public static void end() {
         System.out.println("All tests finished");
     }
 
