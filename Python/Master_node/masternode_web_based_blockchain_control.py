@@ -19,12 +19,12 @@ node = Flask("__name__")
 next_proof = 0
 last_miner = ""
 block_reward = 5000
-already_mined = False
 block_count = 0
 next_halving = 7200
 total_supply = 1000000000
 max_ledger_burn_percentage = 0.5
 registered_users = []
+current_miners = []
 
 
 def blocktime():
@@ -32,7 +32,6 @@ def blocktime():
         global first_time
         global next_proof
         global block_reward
-        global already_mined
         global registered_users
         global block_count
         global blockchain
@@ -43,28 +42,21 @@ def blocktime():
         if block_count == next_halving:
             block_reward = block_reward / 2
             next_halving = next_halving * 2
-        # Generate genesis block at blocktime (2 minutes)
-        if first_time:
-            if (int(time.time()) % 120) <= 5:
-                blockchain = bc.Blockchain()
-                total_supply = total_supply - blockchain.genesis_distributed_money
-                for user in blockchain.genesis_initial_users:
-                    registered_users.append(user)
 
-                first_time = False
-                next_proof = 0
-                block_count = block_count + 1
-                time.sleep(10)
-        # Generate new block at blocktime (2 minutes)
-        elif (int(time.time()) % 120) <= 5:
-            if next_proof == 0:
-                previous_block = blockchain.last_block
-                next_proof = blockchain.pow(previous_block=previous_block)
-            else:
-                global last_miner
-                blockchain.add_transaction(sender="masternode", recipient=last_miner, amount=block_reward)
-                total_supply = total_supply - block_reward
-                pass
+        if first_time:
+            blockchain = bc.Blockchain()
+            total_supply = total_supply - blockchain.genesis_distributed_money
+            for user in blockchain.genesis_initial_users:
+                registered_users.append(user)
+
+            first_time = False
+            next_proof = 0
+            block_count = block_count + 1
+            return
+        else:
+            global last_miner
+            blockchain.add_transaction(sender="masternode", recipient=last_miner, amount=block_reward)
+            total_supply = total_supply - block_reward
 
             # Burn
             number_of_selected_users = math.ceil(len(registered_users) * 10 / 100)
@@ -127,16 +119,15 @@ def blocktime():
             current_last_block = blockchain.chain[-1]
             blockchain.forge_block(next_proof, blockchain.hash_block(current_last_block))
             block_count = block_count + 1
-            already_mined = False
             next_proof = 0
-
-            time.sleep(10)
+            return
 
 
 def startup_sequence():
     global master_node_pool
     global first_time
     global blockchain
+    global block_count
     global registered_users
     global local_node
     chosen_lookup_server = random.choice(lookup_server_pool)
@@ -160,7 +151,8 @@ def startup_sequence():
         master_node_pool.append(local_node)
         response = requests.get(f'http://{sync_from}/register/print')
         registered_users = response.json()
-        threading.Thread(target=blocktime).start()
+        response = requests.get(f'http://{sync_from}/block/count')
+        block_count = response.json()
     message = {
         'masternode': local_node
     }
@@ -184,11 +176,84 @@ def new_masternode():
     return jsonify(), 200
 
 
+@node.route('/block/count', methods=['GET'])
+def ret_block_count():
+    return jsonify(block_count), 200
+
+
+@node.route('/master/add/miner', methods=['POST'])
+def master_add_miner():
+    global current_miners
+    message = request.get_json(force=True)
+    current_miners.append(message['miner'])
+    return jsonify(), 200
+
+
+@node.route('/master/remove/miner', methods=['POST'])
+def master_remove_miner():
+    global current_miners
+    message = request.get_json(force=True)
+    current_miners.remove(message['miner'])
+    return jsonify(), 200
+
+
+@node.route('/add/miner', methods=['POST'])
+def add_miner():
+    global current_miners
+    message = request.get_json(force=True)
+    current_miners.append(message['miner'])
+    tmp_master_nodes = master_node_pool.copy()
+    tmp_master_nodes.remove(local_node)
+    for m in tmp_master_nodes:
+        requests.post(f'http://{m}/master/add/miner', json=message)
+    return jsonify(), 200
+
+
+@node.route('/remove/miner', methods=['POST'])
+def rem_miner():
+    global current_miners
+    message = request.get_json(force=True)
+    current_miners.remove(message['miner'])
+    tmp_master_nodes = master_node_pool.copy()
+    tmp_master_nodes.remove(local_node)
+    for m in tmp_master_nodes:
+        requests.post(f'http://{m}/master/remove/miner', json=message)
+    return jsonify(), 200
+
+
+@node.route('/add/block', methods=['POST'])
+def add_latest_block():
+    global next_proof
+    global block_count
+    global total_supply
+    message = request.get_json(force=True)
+    current_last_block = blockchain.chain[-1]
+    next_proof = message['proof']
+    print(next_proof)
+    sender_node = message['node']
+    if blockchain.validate_pow(current_last_block['proof'], next_proof,
+                               blockchain.hash_block(current_last_block)) is False:
+        return jsonify("Proof not valid!"), 400
+    else:
+        blockchain.chain.append(message['block'])
+        block_count = block_count + 1
+        total_supply = (requests.get(f'http://{sender_node}/ledger')).json()
+        print("Ledger: " + str(total_supply))
+        for b in blockchain.chain:
+            print(blockchain.hash_block(b))
+        return jsonify(), 200
+
+
 @node.route('/remove/masternode', methods=['POST'])
-def remove_masternode():
+def remove_master_node():
     message = request.get_json(force=True)
     master_node_pool.remove(message['masternode'])
     return jsonify(), 200
+
+
+@node.route('/ledger')
+def ret_ledger():
+    return jsonify(total_supply), 200
 
 
 @node.route('/active/masternodes', methods=['GET'])
@@ -198,9 +263,9 @@ def active_masternodes():
 
 @node.route('/update/chain', methods=['POST'])
 def update_chain():
+    global next_proof
     # Check if given proof of work is valid and masternodes pow
     new_proof_json = request.get_json(force=True)
-    global next_proof
     next_proof = new_proof_json['proof']
     current_last_block = blockchain.chain[-1]
     if blockchain.validate_pow(current_last_block['proof'], next_proof,
@@ -208,9 +273,20 @@ def update_chain():
         return jsonify("Block not valid."), 400
     else:
         global last_miner
-        global already_mined
         last_miner = new_proof_json['miner']
-        already_mined = True
+        blocktime()
+        tmp_master_nodes = master_node_pool.copy()
+        tmp_master_nodes.remove(local_node)
+        for m in tmp_master_nodes:
+            requests.post(f'http://{m}/add/block',
+                          json={"node": local_node, "proof": new_proof_json['proof'], "block": blockchain.last_block})
+        tmp_miners = current_miners.copy()
+        tmp_miners.remove(new_proof_json['address'])
+        for mr in tmp_miners:
+            requests.get(f'http://{mr}/update/miner')
+        print("Ledger: " + str(total_supply))
+        for b in blockchain.chain:
+            print(blockchain.hash_block(b))
         return jsonify(
             "Block valid. Block will be added to chain."), 200
 
@@ -230,7 +306,7 @@ def transactions():
 # Only for testing purposes
 # Return current chain
 @node.route('/chain', methods=['GET'])
-def rückgabe_ganze_blockchain():
+def return_entire_blockchain():
     try:
         reply = {
             'chain': blockchain.chain,
@@ -277,13 +353,6 @@ def update_transactions():
                                recipient=add_transactions['recipient'],
                                amount=add_transactions['amount'])
     return jsonify(), 200
-
-
-# Return mining status (Has the next pow already been mined?)
-@node.route('/mining/status', methods=['GET'])
-def mining_status():
-    global already_mined
-    return jsonify(already_mined), 200
 
 
 # Return a specific users transaction history

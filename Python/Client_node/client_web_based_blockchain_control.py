@@ -2,40 +2,58 @@ from Python.Client_node import client_blockchain as bc
 from flask import Flask, jsonify, request
 from urllib.parse import urlparse
 import requests
+import signal
+import os
+import multiprocessing
 
 node = Flask(__name__)
 blockchain = bc.Blockchain()
-masternode = ""
-name = ""
+masternode = "192.168.1.153:2169"
+name = "miner00"
 first_time = True
+static_ip = "192.168.1.50:21569"
+
+
+def minen():
+    # Blockchain is updated before pow is calculated
+    init_sync()
+    # Calculation of next pow
+    previous_block = blockchain.last_block
+    next_proof = blockchain.pow(previous_block=previous_block)
+    global name
+    # Send pow to master node for confirmation
+    requests.post(f'http://{masternode}/update/chain',
+                  json={"proof": next_proof, "miner": name, "address": static_ip})
+    minen()
+
+
+p = multiprocessing.Process(target=minen)
 
 
 @node.route('/mine', methods=['GET'])
-def minen():
-    # Blockchain is updated before pow is calculated
-    sync_status = init_sync()
-    # Current mining status (Has someone else already mined next pow?) is checked from the masternode
-    status = requests.get(f'http://{masternode}/mining/status')
-    if status.status_code == 200:
-        mining_status = status.json()
-        # If next pow has not been calculated already by someone else go on
-        if not mining_status:
-            # Calculation of next pow
-            previous_block = blockchain.last_block
-            next_proof = blockchain.pow(previous_block=previous_block)
-            global name
-            # Send pow to masternode for confirmation
-            masternode_response = requests.post(f'http://{masternode}/update/chain',
-                                                json={"proof": next_proof, "miner": name})
-            if masternode_response.status_code == 200:
-                reply = {
-                    'message': "New block will be forged at blocktime",
-                }
-                return jsonify(reply), 200
-            else:
-                return jsonify("Error"), 500
-        else:
-            return jsonify("POW has already been calculated"), 403
+def initiate_mining():
+    global p
+    p = multiprocessing.Process(target=minen)
+    p.start()
+    requests.post(f'http://{masternode}/add/miner', json={"miner": static_ip})
+    return jsonify(), 200
+
+
+@node.route('/update/miner', methods=['GET'])
+def miner_update():
+    global p
+    p.terminate()
+    p = multiprocessing.Process(target=minen)
+    p.start()
+    return jsonify(), 200
+
+
+@node.route('/stop/miner', methods=['GET'])
+def kill_miner():
+    global p
+    p.terminate()
+    requests.post(f'http://{masternode}/remove/miner', json={"miner": static_ip})
+    return jsonify(), 200
 
 
 # Return entire chain
@@ -93,13 +111,21 @@ def init_sync(only_transactions=False):
         resp = requests.get(f'http://{masternode}/full/chain')
         if resp.status_code == 200:
             new_chain = resp.json()
-            if blockchain.validate_new_chain(new_chain) is False:
-                return jsonify(), 500
+            resp = (requests.get(f'http://{masternode}/block/count')).json()
+            print(resp)
+            if resp > 1:
+                if blockchain.validate_new_chain(new_chain) is False:
+                    return jsonify("Invalid chain"), 500
+                else:
+                    blockchain.chain = new_chain
+                    t = requests.get(f'http://{masternode}/current/transactions')
+                    blockchain.mempool = t.json()
+                    return jsonify("Chain replaced"), 200
             else:
                 blockchain.chain = new_chain
                 t = requests.get(f'http://{masternode}/current/transactions')
                 blockchain.mempool = t.json()
-        return jsonify("Chain replaced"), 200
+                return jsonify("Chain replaced"), 200
     # Get only update of transactions
     else:
         t = requests.get(f'http://{masternode}/current/transactions')

@@ -63,22 +63,10 @@ class Blockchain:
         # Return last block in chain
         return self.chain[-1]
 
-    def pow(self, previous_block):
-        # Calculate next proof of work
-        previous_proof = previous_block['proof']
-        previous_hash = self.hash_block(previous_block)
-
-        current_proof = 0
-        while self.validate_pow(previous_proof, current_proof, previous_hash) is False:
-            current_proof = current_proof + 1
-        return current_proof
-
     @staticmethod
     def validate_pow(previous_proof, current_proof, previous_hash):
         # Check if given proof of work is valid
         x = f'{previous_proof}{current_proof}{previous_hash}'.encode()
         z = hashlib.sha256(x).hexdigest()
 
-        return z[:4] == "0000"
-
-
+        return z[:7] == "0000000"

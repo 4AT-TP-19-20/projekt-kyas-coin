@@ -43,8 +43,8 @@ class Blockchain:
     def validate_pow(previous_proof, current_proof, previous_hash):
         x = f'{previous_proof}{current_proof}{previous_hash}'.encode()
         z = hashlib.sha256(x).hexdigest()
-        # Check if hash has 4 leading zeros
-        return z[:4] == "0000"
+        # Check if hash has 7 leading zeros
+        return z[:7] == "0000000"
 
     def validate_new_chain(self, chain):
         # Check if new chain is valid
