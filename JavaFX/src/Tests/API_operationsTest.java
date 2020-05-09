@@ -37,39 +37,6 @@ class API_operationsTest {
         assertThrows(NoClassDefFoundError.class, () -> tester.new_transaction("String", Float.NEGATIVE_INFINITY));
     }
 
-    @RepeatedTest(1000)
-    // Performance test
-    public void register_user_performanceTest() {
-        tester.register_user();
-    }
-
-    @RepeatedTest(1000)
-    // Performance test
-    public void get_balance_performanceTest() throws IOException {
-        tester.get_balance();
-    }
-
-    @RepeatedTest(1000)
-    // Performance test
-    public void set_masternode_performanceTest() {
-        tester.set_masternode();
-    }
-
-    @RepeatedTest(1000)
-    // Performance test
-    public void new_transaction_performanceTest() {
-        tester.new_transaction("", 0);
-    }
-
-    @RepeatedTest(1000)
-    // Performance test
-    public void mining_performanceTest() {
-        tester.mining();
-    }
-
-
-
-
     @AfterAll
     public static void end() {
         System.out.println("All tests finished");
