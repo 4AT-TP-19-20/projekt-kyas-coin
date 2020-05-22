@@ -1,4 +1,4 @@
-from Python.Client_node import client_blockchain as bc
+from Client_node import client_blockchain as bc
 from flask import Flask, jsonify, request
 from urllib.parse import urlparse
 import requests

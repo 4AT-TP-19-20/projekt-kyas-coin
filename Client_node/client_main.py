@@ -1,4 +1,4 @@
-from Python.Client_node import client_web_based_blockchain_control
+from Client_node import client_web_based_blockchain_control
 
 if __name__ == "__main__":
     # Print kyas logo into console
