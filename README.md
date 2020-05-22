@@ -27,7 +27,10 @@ A working `Python 3.7` environment with the following packages:
 They can all be installed by running `pip3.7 install <package>`
 
 ### Running the code
-After installing all the prerequisites you can run the Kyas Node and Client programs as you would any other Python program.
+After installing all the prerequisites you can run the Kyas Node and Client programs as you would any other Python program. 
+To start the local node, execute `python3.7 client_main.py`. To start a master node, execute
+`python3.7 masternode_main.py`. Change the beginning of the command (python3.7) to use the python version
+installed on your system.
 
 ## JavaFx Wallet Client and Miner
 
