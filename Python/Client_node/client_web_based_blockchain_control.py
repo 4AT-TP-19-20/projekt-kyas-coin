@@ -8,17 +8,20 @@ import multiprocessing
 
 node = Flask(__name__)
 blockchain = bc.Blockchain()
-masternode = "192.168.1.153:2169"
-name = "miner00"
+masternode = "192.168.1.169:2169"
+name = "alexander"
 first_time = True
-static_ip = "192.168.1.50:21569"
+static_ip = "192.168.1.21:21569"
 
 
 def minen():
     # Blockchain is updated before pow is calculated
     init_sync()
     # Calculation of next pow
-    previous_block = blockchain.last_block
+    try:
+        previous_block = blockchain.last_block
+    except IndexError:
+        minen()
     next_proof = blockchain.pow(previous_block=previous_block)
     global name
     # Send pow to master node for confirmation
@@ -106,6 +109,7 @@ def new_transaction():
 
 @node.route('/get/full/update', methods=['GET'])
 def init_sync(only_transactions=False):
+    global blockchain
     # If get only transactions is false get update of chain and transactions
     if only_transactions is False:
         resp = requests.get(f'http://{masternode}/full/chain')
@@ -115,6 +119,7 @@ def init_sync(only_transactions=False):
             print(resp)
             if resp > 1:
                 if blockchain.validate_new_chain(new_chain) is False:
+                    requests.get(f'http://{masternode}/prime/chain/sync')
                     return jsonify("Invalid chain"), 500
                 else:
                     blockchain.chain = new_chain
@@ -185,3 +190,6 @@ def set_masternode():
         init_sync(False)
         first_time = False
     return jsonify("Masternode set to: " + masternode), 200
+
+# TODO: If chain not valid, update chain until it is valid
+# TODO: Add try except

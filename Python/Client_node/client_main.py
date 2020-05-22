@@ -6,4 +6,4 @@ if __name__ == "__main__":
     logo = file.read()
     print(logo)
     # Start flask server
-    client_web_based_blockchain_control.node.run(host='192.168.1.50', port=21569)
+    client_web_based_blockchain_control.node.run(host='192.168.1.21', port=21569)

@@ -224,6 +224,7 @@ def rem_miner():
 @node.route('/add/block', methods=['POST'])
 def add_latest_block():
     global next_proof
+    global current_miners
     global block_count
     global total_supply
     message = request.get_json(force=True)
@@ -238,10 +239,77 @@ def add_latest_block():
         blockchain.chain.append(message['block'])
         block_count = block_count + 1
         total_supply = (requests.get(f'http://{sender_node}/ledger')).json()
+        for ms in master_node_pool:
+            received_block = (requests.get(f'http://{ms}/last/block')).json()
+            if received_block['index'] == blockchain.last_block['index']:
+                if received_block['forge_time'] < blockchain.last_block['forge_time']:
+                    blockchain.chain[-1] = received_block
+                    total_supply = (requests.get(f'http://{ms}/ledger')).json()
+                    for mr in current_miners:
+                        requests.get(f'http://{mr}/update/miner')
         print("Ledger: " + str(total_supply))
         for b in blockchain.chain:
             print(blockchain.hash_block(b))
         return jsonify(), 200
+
+
+@node.route('/last/block')
+def ret_last_block():
+    return jsonify(blockchain.last_block), 200
+
+
+@node.route('/prime/chain/sync')
+def prime_chain_sync():
+    global next_proof
+    global current_miners
+    global block_count
+    global total_supply
+    for ms in master_node_pool:
+        received_block = (requests.get(f'http://{ms}/last/block')).json()
+        if received_block['index'] == blockchain.last_block['index']:
+            if received_block['forge_time'] < blockchain.last_block['forge_time']:
+                blockchain.chain[-1] = received_block
+                total_supply = (requests.get(f'http://{ms}/ledger')).json()
+                for mr in current_miners:
+                    requests.get(f'http://{mr}/update/miner')
+        elif received_block['index'] >= blockchain.last_block['index']:
+            if received_block['forge_time'] > blockchain.last_block['forge_time']:
+                blockchain.chain[-1] = received_block
+                total_supply = (requests.get(f'http://{ms}/ledger')).json()
+                for mr in current_miners:
+                    requests.get(f'http://{mr}/update/miner')
+    print("Ledger: " + str(total_supply))
+    for b in blockchain.chain:
+        print(blockchain.hash_block(b))
+    for ms in master_node_pool:
+        requests.get(f'http://{ms}/chain/sync')
+    return jsonify(), 200
+
+
+@node.route('/chain/sync')
+def chain_sync():
+    global next_proof
+    global current_miners
+    global block_count
+    global total_supply
+    for ms in master_node_pool:
+        received_block = (requests.get(f'http://{ms}/last/block')).json()
+        if received_block['index'] == blockchain.last_block['index']:
+            if received_block['forge_time'] < blockchain.last_block['forge_time']:
+                blockchain.chain[-1] = received_block
+                total_supply = (requests.get(f'http://{ms}/ledger')).json()
+                for mr in current_miners:
+                    requests.get(f'http://{mr}/update/miner')
+        elif received_block['index'] >= blockchain.last_block['index']:
+            if received_block['forge_time'] > blockchain.last_block['forge_time']:
+                blockchain.chain[-1] = received_block
+                total_supply = (requests.get(f'http://{ms}/ledger')).json()
+                for mr in current_miners:
+                    requests.get(f'http://{mr}/update/miner')
+    print("Ledger: " + str(total_supply))
+    for b in blockchain.chain:
+        print(blockchain.hash_block(b))
+    return jsonify(), 200
 
 
 @node.route('/remove/masternode', methods=['POST'])
@@ -273,6 +341,7 @@ def update_chain():
         return jsonify("Block not valid."), 400
     else:
         global last_miner
+        global total_supply
         last_miner = new_proof_json['miner']
         blocktime()
         tmp_master_nodes = master_node_pool.copy()
@@ -284,6 +353,14 @@ def update_chain():
         tmp_miners.remove(new_proof_json['address'])
         for mr in tmp_miners:
             requests.get(f'http://{mr}/update/miner')
+        for ms in master_node_pool:
+            received_block = (requests.get(f'http://{ms}/last/block')).json()
+            if received_block['index'] == blockchain.last_block['index']:
+                if received_block['forge_time'] < blockchain.last_block['forge_time']:
+                    blockchain.chain[-1] = received_block
+                    total_supply = (requests.get(f'http://{ms}/ledger')).json()
+                    for mr in current_miners:
+                        requests.get(f'http://{mr}/update/miner')
         print("Ledger: " + str(total_supply))
         for b in blockchain.chain:
             print(blockchain.hash_block(b))
@@ -443,3 +520,15 @@ def update_masternodes():
 print("Press CTRL + C to stop master node\n")
 startup_sequence()
 signal.signal(signal.SIGINT, shutdown_sequence)
+
+# TODO: Config file for master node, client node, miner
+# TODO: Fix forks
+# TODO: Add total network sync after every block to check for forks and resolve them
+# TODO: Make miner a standalone cli
+# TODO: Add local miner list to master node
+# TODO: JavaFX login in return button
+# TODO: Check logo at JavaFX client login
+# TODO: Register miner before mining
+# TODO: Print miner h/s
+# TODO: Use all cores when mining, not only a single core
+# TODO: Add check after conflicting block has been replaced for chain integrity
