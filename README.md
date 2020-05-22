@@ -28,14 +28,14 @@ They can all be installed by running `pip3.7 install <package>`
 ### Running the code
 After installing all the prerequisites you can run the Kyas Node and Client programs as you would any other Python program. 
 To start the local node, execute `python3.7 client_main.py`. To start a master node, execute
-`python3.7 masternode_main.py`. Change the beginning of the command (python3.7) to use the python version
-installed on your system.
+`python3.7 masternode_main.py`. 
 
 ## JavaFx Wallet Client and Miner
 
 ### Prerequisites
 A working `JavaFX SDK`installation. You will need a version of Java installed that is newer or equal to `Java 14`. 
-You can check your currently active java version by running the command `java -version`.
+You can check your currently active java version by running the command `java -version`. You will also need `JavaFX SDK` matching
+the Java 14 version.
 ### Running the JAR
 You can execute the Client by typing the following command into a console:
 `java --module-path "PATH_TO_JAVAFX_LIB_DIR" --add-modules javafx.controls,javafx.fxml,javafx.base,javafx.graphics,javafx.web,javafx.swing -jar PATH_TO_JAR`
