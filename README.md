@@ -4,8 +4,7 @@
 Kyas Coin is a deflationary cryptocurrency written from scratch in Python.
 
 This repository contains:
-- Python Node
-- Python CLI Client
+- Python CLI Client of both client nodes and master node
 - JavaFX Wallet Client and Miner
 - Android Wallet
 
