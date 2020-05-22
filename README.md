@@ -51,6 +51,13 @@ Installing the app by tapping on the APK.
 
 Note: Currently there is a bug that may stop the app from working on non-rooted devices. This is being addressed in [Issue #2][i2]
 
+# Note on ongoing development
+Currently, all master nodes and the block chain are offline, so it is not possible to actively execute transactions. 
+This release serves as a concept for a later, more complete release. The master branch contains a more complete image of the project. 
+Future releases will introduce full synchronization of the node network to decentralize the crypto currency. 
+The development team would like to thank everyone who provided input for the development of the crypto currency.
+
+
 
 
 
